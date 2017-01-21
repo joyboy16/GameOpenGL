@@ -30,9 +30,14 @@ public class MainGameLoop {
         RawModel model = OBJLoader.loadObjectModel("dragon",loader);
         
         TexturedModel staticModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("stallTexture")));
+        ModelTexture texture = staticModel.getTexture();
+        texture.setShineDamper(20);
+        texture.setReflectivity(1);
+        
         
         Entity entity = new Entity(staticModel, new Vector3f(0, -5, -30), 0, 0, 0, 1);
         Light light = new Light(new Vector3f(0, -2, -25), new Vector3f(1, 1, 1));
+       
         Camera camera = new Camera();
         
         while(!Display.isCloseRequested()){
