@@ -14,8 +14,10 @@ import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
 import renderEngine.OBJLoader;
-import renderEngine.Renderer;
+import renderEngine.TerrainRenderer;
+import renderEngine.EntityRenderer;
 import shaders.StaticShader;
+import terrains.Terrain;
 import textures.ModelTexture;
  
 public class MainGameLoop {
@@ -26,16 +28,19 @@ public class MainGameLoop {
         Loader loader = new Loader();
          
         
-        RawModel model = OBJLoader.loadObjectModel("dragon",loader);
+        RawModel model = OBJLoader.loadObjectModel("tree",loader);
         
-        TexturedModel staticModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("stallTexture")));
+        TexturedModel staticModel = new TexturedModel(model, new ModelTexture(loader.loadTexture("tree")));
         ModelTexture texture = staticModel.getTexture();
-        texture.setShineDamper(20);
-        texture.setReflectivity(1);
+      //  texture.setShineDamper(20);
+      //  texture.setReflectivity(1);
         
         
-        Entity entity = new Entity(staticModel, new Vector3f(0, -5, -30), 0, 0, 0, 1);
-        Light light = new Light(new Vector3f(0, -2, -25), new Vector3f(1, 1, 1));
+        Entity entity = new Entity(staticModel, new Vector3f(0, 0, -25), 0, 0, 0, 1);
+        Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
+        
+        Terrain terrain = new Terrain(0, 0, loader, new ModelTexture(loader.loadTexture("grass")));
+        Terrain terrain2 = new Terrain(1, 0, loader, new ModelTexture(loader.loadTexture("grass")));
        
         Camera camera = new Camera();
         
@@ -44,7 +49,11 @@ public class MainGameLoop {
             //entity.increasePosition(0,0, -0.1f);
             entity.increaseRotation(0, 1, 0);
             camera.move();
+            
+            renderer.processTerrain(terrain);
+            renderer.processTerrain(terrain2);
             renderer.processEntity(entity);
+            
             renderer.render(light, camera);
             DisplayManager.updateDisplay();         
         }
