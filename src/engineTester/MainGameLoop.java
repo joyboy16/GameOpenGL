@@ -257,8 +257,10 @@ public class MainGameLoop {
 
 				} else {
 					float y = terrain.getHeightOfTerrain(x, z);
+					if(y > 0.0){
 					entities.add(new Entity(pineModel, 1, new Vector3f(x, y, z), 0,
 							random.nextFloat() * 360, 0, random.nextFloat() * 0.6f + 0.25f));
+					}
 				}
 			}
 		}
@@ -297,9 +299,9 @@ public class MainGameLoop {
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), buffers);
 		List<WaterTile> waters = new ArrayList<WaterTile>();
-		for (int i = 0; i < 6; i++) {
-			for (int j = 0; j < 6; j++) {
-				waters.add(new WaterTile(i * 160, -j * 160, -2.5f));
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				waters.add(new WaterTile(i * 120, -j * 120, -2.8f));
 			}
 		}
 		/*WaterFrameBuffers buffers = new WaterFrameBuffers();
