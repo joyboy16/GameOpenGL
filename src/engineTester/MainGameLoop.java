@@ -181,8 +181,10 @@ public class MainGameLoop {
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 		
 		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightMap");
+		Terrain terrain1 = new Terrain(1, -1, loader, texturePack, blendMap, "heightMap");
 		List<Terrain> terrains = new ArrayList<Terrain>();
 		terrains.add(terrain);
+		//terrains.add(terrain1);
 
 		// ********************MODELS*********************
 
@@ -299,8 +301,8 @@ public class MainGameLoop {
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), buffers);
 		List<WaterTile> waters = new ArrayList<WaterTile>();
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 8; j++) {
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < 6; j++) {
 				waters.add(new WaterTile(i * 120, -j * 120, -2.8f));
 			}
 		}

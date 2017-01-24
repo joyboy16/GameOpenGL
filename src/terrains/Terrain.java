@@ -20,9 +20,9 @@ import toolbox.Maths;
 public class Terrain {
 
 	private static final float SIZE = 150;
-	private static final float MAX_HEIGHT = 40;
+	private static final float MAX_HEIGHT = 40; 
 	private static final float MAX_PIXEL_COLOUR = 256 * 256 * 256;
-	private static final int VERTEX_COUNT = 256;
+	private static final int VERTEX_COUNT = 128;
 	private static final int SEED = new Random().nextInt(1000000000);
 
 	private float x;
@@ -41,8 +41,10 @@ public class Terrain {
 		this.blendMap = blendMap;
 		this.x = gridX * SIZE;
 		this.z = gridZ * SIZE;
+		//generator = new HeightsGenerator(gridX, gridZ, VERTEX_COUNT, SEED);
+		generator = new HeightsGenerator();
 		this.model = generateTerrain(loader, heightMap);
-		generator = new HeightsGenerator(gridX, gridZ, VERTEX_COUNT, SEED);
+		
 	}
 
 	public float getX() {
@@ -95,15 +97,13 @@ public class Terrain {
 
 	private RawModel generateTerrain(Loader loader, String heightMap) {
 		
-		HeightsGenerator generator = new HeightsGenerator();
-		
 		BufferedImage image = null;
 		try {
 			image = ImageIO.read(new File("res/" + heightMap + ".png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		int VERTEX_COUNT = 128;
+	//	int VERTEX_COUNT = 128;
 
 		int count = VERTEX_COUNT * VERTEX_COUNT;
 		heights = new float[VERTEX_COUNT][VERTEX_COUNT];
