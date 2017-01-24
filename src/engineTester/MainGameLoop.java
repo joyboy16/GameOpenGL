@@ -204,16 +204,6 @@ public class MainGameLoop {
 				new ModelTexture(loader.loadTexture("lamp")));
 		lamp.getTexture().setUseFakeLighting(true);
 		
-		/*TexturedModel bobble = new TexturedModel(OBJFileLoader.loadOBJ("pine", loader),
-				new ModelTexture(loader.loadTexture("pine")));
-		bobble.getTexture().setHasTransparency(true);*/
-
-		
-
-		//Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightmap");
-		//List<Terrain> terrains = new ArrayList<Terrain>();
-		//terrains.add(terrain);
-
 		List<Entity> entities = new ArrayList<Entity>();
 		List<Entity> normalMapEntities = new ArrayList<Entity>();
 		
@@ -259,43 +249,47 @@ public class MainGameLoop {
 							random.nextFloat() * 360, 0, 0.9f));
 				}
 			}
-			if (i % 1 == 0) {
-				float x = random.nextFloat() * 800;
-				float z = random.nextFloat() * -800;
+			if (i % 2 == 0) {
+
+				float x = random.nextFloat() * 150;
+				float z = random.nextFloat() * -150;
 				if ((x > 50 && x < 100) || (z < -50 && z > -100)) {
 
 				} else {
 					float y = terrain.getHeightOfTerrain(x, z);
-					if(y > 0){
-						entities.add(new Entity(pineModel, 1, new Vector3f(x, y, z), 0,
-								random.nextFloat() * 360, 0, random.nextFloat() * 0.6f + 0.8f));
-					}
+					entities.add(new Entity(pineModel, 1, new Vector3f(x, y, z), 0,
+							random.nextFloat() * 360, 0, random.nextFloat() * 0.6f + 0.25f));
 				}
 			}
 		}
-		for (int i = 0; i < 30; i++) {
-			float x = 400 + random.nextFloat() * 200;
-			float z = -400 + random.nextFloat() * 200;
+		for (int i = 0; i < 90; i++) {
+			float x =  random.nextFloat() * 800;
+			float z =  random.nextFloat() * -800;
 			
 			float y = terrain.getHeightOfTerrain(x, z);
 			normalMapEntities.add(new Entity(boulderModel, new Vector3f(x, y, z), random.nextFloat() * 360, 0, 0, 0.5f + random.nextFloat()));
 		}
-		entities.add(new Entity(rocks, new Vector3f(75, 4.6f, -75), 0, 0, 0, 75));
+		//entities.add(new Entity(rocks, new Vector3f(75, 4.6f, -75), 0, 0, 0, 75));
 		
 		//*******************OTHER SETUP***************
 
 		List<Light> lights = new ArrayList<Light>();
-		Light sun = new Light(new Vector3f(1000000, 1500000, -1000000), new Vector3f(1.3f, 1.3f, 1.3f));
+		Light sun = new Light(new Vector3f(10000, 15000, -10000), new Vector3f(1.3f, 1.3f, 1.3f));
 		lights.add(sun);
 
 		entities.add(player);
+		List<Entity> shadowEntities = new ArrayList<Entity>();
+		shadowEntities.addAll(entities);
+		shadowEntities.addAll(normalMapEntities);
+		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+		
 		
 		List<GuiTexture> guiTextures = new ArrayList<GuiTexture>();
 		GuiTexture shadowMap = new GuiTexture(renderer.getShadowMapTexture(), 
 				new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f));
 		//guiTextures.add(shadowMap);
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
-		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+		
 	
 		//**********Water Renderer Set-up************************
 		
@@ -303,9 +297,9 @@ public class MainGameLoop {
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), buffers);
 		List<WaterTile> waters = new ArrayList<WaterTile>();
-		for (int i = 1; i < 5; i++) {
-			for (int j = 1; j < 5; j++) {
-				waters.add(new WaterTile(i * 160, -j * 160, -1));
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < 6; j++) {
+				waters.add(new WaterTile(i * 160, -j * 160, -2.5f));
 			}
 		}
 		/*WaterFrameBuffers buffers = new WaterFrameBuffers();
@@ -333,16 +327,11 @@ public class MainGameLoop {
 			player.move(terrain);
 			camera.move();
 			picker.update();
-			
+			renderer.renderShadowMap(shadowEntities, sun);
 			//system.generateParticles(new Vector3f(player.getPosition().x, player.getPosition().y+10.0f,player.getPosition().z));
 			//system.generateParticles(new Vector3f(200, 10, -100));
 			ParticleMaster.update(camera);
 			
-			
-			//entity.increaseRotation(0, 1, 0);
-			//entity2.increaseRotation(0, 1, 0);
-			//entity3.increaseRotation(0, 1, 0);
-			renderer.renderShadowMap(entities, sun);
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 			
 			//render reflection texture
@@ -350,13 +339,15 @@ public class MainGameLoop {
 			float distance = 2 * (camera.getPosition().y - waters.get(0).getHeight());
 			camera.getPosition().y -= distance;
 			camera.invertPitch();
-			renderer.renderScene(entities, normalMapEntities, terrains, lights, camera, new Vector4f(0, 1, 0, -waters.get(0).getHeight()+1));
+			renderer.renderScene(entities, normalMapEntities, terrains, lights, camera, 
+					new Vector4f(0, 1, 0, -waters.get(0).getHeight()+1));
 			camera.getPosition().y += distance;
 			camera.invertPitch();
 			
 			//render refraction texture
 			buffers.bindRefractionFrameBuffer();
-			renderer.renderScene(entities, normalMapEntities, terrains, lights, camera, new Vector4f(0, -1, 0, waters.get(0).getHeight() + 0.2f));
+			renderer.renderScene(entities, normalMapEntities, terrains, lights, camera, 
+					new Vector4f(0, -1, 0, waters.get(0).getHeight() + 0.2f));
 			
 			//render to screen
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
