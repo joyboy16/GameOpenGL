@@ -66,7 +66,7 @@ public class MainGameLoop {
 	//	text.setColour(1, 0, 0);
 		
 		
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
+		/*TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
 		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
 		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
@@ -79,6 +79,9 @@ public class MainGameLoop {
 
 		TexturedModel rocks = new TexturedModel(OBJFileLoader.loadOBJ("rocks", loader),
 				new ModelTexture(loader.loadTexture("rocks")));
+		
+		TexturedModel ship = new TexturedModel(OBJFileLoader.loadOBJ("Creature", loader), 
+				new ModelTexture(loader.loadTexture("Creature")));
 
 		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
 		fernTextureAtlas.setNumberOfRows(2);
@@ -129,9 +132,9 @@ public class MainGameLoop {
 		Entity entity = new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f);
 		Entity entity2 = new Entity(boulderModel, new Vector3f(85, 10, -75), 0, 0, 0, 1f);
 		Entity entity3 = new Entity(crateModel, new Vector3f(65, 10, -75), 0, 0, 0, 0.04f);
-		normalMapEntities.add(entity);
-		normalMapEntities.add(entity2);
-		normalMapEntities.add(entity3);
+		//normalMapEntities.add(entity);
+		//normalMapEntities.add(entity2);
+		//normalMapEntities.add(entity3);
 		
 		Random random = new Random(5666778);
 		for (int i = 0; i < 60; i++) {
@@ -142,8 +145,8 @@ public class MainGameLoop {
 				} else {
 					float y = terrain.getHeightOfTerrain(x, z);
 
-					entities.add(new Entity(fern, 3, new Vector3f(x, y, z), 0,
-							random.nextFloat() * 360, 0, 0.9f));
+				//	entities.add(new Entity(fern, 3, new Vector3f(x, y, z), 0,
+					//		random.nextFloat() * 360, 0, 0.9f));
 				}
 			}
 			if (i % 2 == 0) {
@@ -154,16 +157,18 @@ public class MainGameLoop {
 
 				} else {
 					float y = terrain.getHeightOfTerrain(x, z);
-					entities.add(new Entity(bobble, 1, new Vector3f(x, y, z), 0,
-							random.nextFloat() * 360, 0, random.nextFloat() * 0.6f + 0.8f));
+				//	entities.add(new Entity(bobble, 1, new Vector3f(x, y, z), 0,
+					//		random.nextFloat() * 360, 0, random.nextFloat() * 0.6f + 0.8f));
 				}
 			}
 		}
-		entities.add(new Entity(rocks, new Vector3f(75, 4.6f, -75), 0, 0, 0, 75));
+		//entities.add(new Entity(rocks, new Vector3f(75, 4.6f, -75), 0, 0, 0, 75));
+		//entities.add(new Entity(ship, new Vector3f(75, 4.6f, -75), 0, 0, 0, 1.0f));
 		
+		*/
 		
 		// *********TERRAIN TEXTURE STUFF**********
-	/*	
+		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
 		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
@@ -207,7 +212,7 @@ public class MainGameLoop {
 		//List<Terrain> terrains = new ArrayList<Terrain>();
 		//terrains.add(terrain);
 
-		/*List<Entity> entities = new ArrayList<Entity>();
+		List<Entity> entities = new ArrayList<Entity>();
 		List<Entity> normalMapEntities = new ArrayList<Entity>();
 		
 		//******************NORMAL MAP MODELS************************
@@ -273,8 +278,8 @@ public class MainGameLoop {
 			float y = terrain.getHeightOfTerrain(x, z);
 			normalMapEntities.add(new Entity(boulderModel, new Vector3f(x, y, z), random.nextFloat() * 360, 0, 0, 0.5f + random.nextFloat()));
 		}
-		//entities.add(new Entity(rocks, new Vector3f(75, 4.6f, -75), 0, 0, 0, 75));
-		*/
+		entities.add(new Entity(rocks, new Vector3f(75, 4.6f, -75), 0, 0, 0, 75));
+		
 		//*******************OTHER SETUP***************
 
 		List<Light> lights = new ArrayList<Light>();
@@ -292,21 +297,21 @@ public class MainGameLoop {
 	
 		//**********Water Renderer Set-up************************
 		
-		/*WaterFrameBuffers buffers = new WaterFrameBuffers();
+		WaterFrameBuffers buffers = new WaterFrameBuffers();
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), buffers);
 		List<WaterTile> waters = new ArrayList<WaterTile>();
 		for (int i = 1; i < 5; i++) {
 			for (int j = 1; j < 5; j++) {
-				waters.add(new WaterTile(i * 160, -j * 160, -1.5f));
+				waters.add(new WaterTile(i * 160, -j * 160, -1));
 			}
-		}*/
-		WaterFrameBuffers buffers = new WaterFrameBuffers();
+		}
+		/*WaterFrameBuffers buffers = new WaterFrameBuffers();
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), buffers);
 		List<WaterTile> waters = new ArrayList<WaterTile>();
 		WaterTile water = new WaterTile(75, -75, 0);
-		waters.add(water);
+		waters.add(water);*/
 		
 		ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particleAtlas"), 4,true);
 		
