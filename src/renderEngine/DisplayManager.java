@@ -25,7 +25,7 @@ public class DisplayManager {
 		
 		try {
 			Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
-			Display.create(new PixelFormat(), attribs);
+			Display.create(new PixelFormat().withSamples(8), attribs);
 			Display.setTitle("Our First Display!");
 			GL11.glEnable(GL13.GL_MULTISAMPLE);
 		} catch (LWJGLException e) {
