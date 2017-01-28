@@ -30,7 +30,7 @@ public class HeightsGenerator {
         for(int i=0;i<OCTAVES;i++){
             float freq = (float) (Math.pow(2, i) / d);
             float amp = (float) Math.pow(ROUGHNESS, i) * AMPLITUDE;
-            total += getInterpolatedNoise((x+xOffset)*freq/6f, (z + zOffset)*freq/6f) * amp;
+            total += getInterpolatedNoise((x+xOffset)*freq/4f, (z + zOffset)*freq/4f) * amp;
         }
         return total;
     }
@@ -69,5 +69,4 @@ public class HeightsGenerator {
         random.setSeed(x * 49632 + z * 325176 + seed);
         return random.nextFloat() * 2f - 1f;
     }
- 
 }

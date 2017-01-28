@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Camera {
 	
-	private float distanceFromPlayer = 35;
+	private float distanceFromSource = 10;
 	private float angleAroundPlayer = 0;
 	
 	private Vector3f position = new Vector3f(0, 0, 0);
@@ -15,9 +15,14 @@ public class Camera {
 	private float roll;
 	
 	private Player player;
+	private Entity entity;
 	
 	public Camera(Player player){
 		this.player = player;
+	}
+	
+	public Camera(Entity entity){
+		this.entity = entity;
 	}
 	
 	public void move(){
@@ -26,8 +31,9 @@ public class Camera {
 		calculateAngleAroundPlayer();
 		float horizontalDistance = calculateHorizontalDistance();
 		float verticalDistance = calculateVerticalDistance();
-		calculateCameraPosition(horizontalDistance, verticalDistance);
-		this.yaw = 180 - (player.getRotY() + angleAroundPlayer);
+		calculateLimitedCameraPosition(horizontalDistance, verticalDistance);
+		//this.yaw = 180 - (player.getRotY() + angleAroundPlayer);
+		this.yaw = -entity.getRotY();
 		yaw%=360;
 	}
 	
@@ -60,19 +66,28 @@ public class Camera {
 		position.y = player.getPosition().y + verticDistance + 4;
 	}
 	
+	private void calculateLimitedCameraPosition(float horizDistance, float verticDistance){
+		float theta = entity.getRotY();
+		float offsetX = (float) (horizDistance * Math.sin(Math.toRadians(theta)));
+		float offsetZ = (float) (horizDistance * Math.cos(Math.toRadians(theta)));
+		position.x = entity.getPosition().x + offsetX;
+		position.z = entity.getPosition().z + offsetZ;
+		position.y = entity.getPosition().y + verticDistance + 0.5f;
+	}
+	
 	private float calculateHorizontalDistance(){
-		return (float) (distanceFromPlayer * Math.cos(Math.toRadians(pitch+4)));
+		return (float) (distanceFromSource * Math.cos(Math.toRadians(pitch+4)));
 	}
 	
 	private float calculateVerticalDistance(){
-		return (float) (distanceFromPlayer * Math.sin(Math.toRadians(pitch+4)));
+		return (float) (distanceFromSource * Math.sin(Math.toRadians(pitch+4)));
 	}
 	
 	private void calculateZoom(){
 		float zoomLevel = Mouse.getDWheel() * 0.03f;
-		distanceFromPlayer -= zoomLevel;
-		if(distanceFromPlayer<5){
-			distanceFromPlayer = 5;
+		distanceFromSource -= zoomLevel;
+		if(distanceFromSource<5){
+			distanceFromSource = 5;
 		}
 	}
 	
