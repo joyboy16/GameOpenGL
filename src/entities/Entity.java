@@ -1,6 +1,7 @@
 package entities;
 
 import models.TexturedModel;
+import physics.PhysicsModel;
 
 import org.lwjgl.util.vector.Vector3f;
 
@@ -12,6 +13,8 @@ public class Entity {
 	private float scale;
 	
 	private int textureIndex = 0;
+	
+	private PhysicsModel physics;
 
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
 			float scale) {
