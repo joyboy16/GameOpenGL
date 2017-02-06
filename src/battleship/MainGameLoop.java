@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.openal.AL10;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -14,6 +15,8 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import audio.AudioMaster;
+import audio.Source;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
@@ -40,6 +43,7 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import time.Time;
 import toolbox.MousePicker;
 import water.WaterFrameBuffers;
 import water.WaterRenderer;
@@ -53,26 +57,108 @@ public class MainGameLoop {
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 		TextMaster.init(loader);
+		Time time = new Time();
 		
-		TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("person", loader), 
+		// ship start
+		Vector3f shipPositionStart = new Vector3f(150, -9.5f, -170);
+		
+		/*TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("person", loader), 
 				new ModelTexture(loader.loadTexture("playerTexture")));
-		Player player = new Player(playerModel, new Vector3f(75, 5, -75), 0, 100, 0, 0.6f);
+		Player player = new Player(playerModel, new Vector3f(75, 5, -75), 0, 100, 0, 0.6f);*/
 		
 		List<Entity> entities = new ArrayList<Entity>();
 		List<Entity> normalMapEntities = new ArrayList<Entity>();
 		
-		TexturedModel canonModel = new TexturedModel(OBJLoader.loadObjModel("canon", loader), new ModelTexture(loader.loadTexture("canonTexture")));
-		Entity canon = new Entity(canonModel, new Vector3f(33, 5, -75), 0, -90, 0, 1);
+		TexturedModel canonModel = new TexturedModel(OBJLoader.loadObjModel("simpleCanon", loader), new ModelTexture(loader.loadTexture("canonTexture")));
+		Entity canon = new Entity(canonModel, new Vector3f(135, -10.5f, -110), 0, 0, 0, 0.01f);
 		entities.add(canon);
+		
+		TexturedModel shipModel = new TexturedModel(OBJLoader.loadObjModel("ship", loader), new ModelTexture(loader.loadTexture("grey")));
+		Entity ship = new Entity(shipModel, shipPositionStart, 0, 180, -2, 0.02f);
+		entities.add(ship);
 		
 		Camera camera = new Camera(canon);
 
 		MasterRenderer renderer = new MasterRenderer(loader,camera);
 		ParticleMaster.init(loader, renderer.getProjectionMatrix());
 		
-	//	FontType font = new FontType(loader.loadTexture("harrington"), new File("res/harrington.fnt"));
-	//	GUIText text = new GUIText("This is some text!", 3f, font, new Vector2f(0f, 0f), 1f, true);
-	//	text.setColour(1, 0, 0);
+		
+		/********************************************************
+		 * 														*
+		 * 						AUDIO							*
+		 * 														*
+		 ********************************************************/
+		
+		// Initialize AudioMaster and set the Listenerposition
+		AudioMaster.init();
+		AudioMaster.setListenerData(canon.getPosition());
+		AL10.alDistanceModel(AL10.AL_INVERSE_DISTANCE_CLAMPED);
+		
+		// Define all necessary sounds
+		int waterSound = AudioMaster.loadSound("audio/water.wav");
+		int birdSound = AudioMaster.loadSound("audio/birds.wav");
+		int boatSound = AudioMaster.loadSound("audio/motorboat.wav");
+		int shotSound = AudioMaster.loadSound("audio/canon.wav");
+		int hitSound = AudioMaster.loadSound("audio/hit.wav");
+		
+		// Create Sources and specify the values of each Sound
+		Source waterSource = new Source();
+		waterSource.setLoop(true);
+		waterSource.setPosition(new Vector3f(150, 0, -150));
+		waterSource.setVelocity(new Vector3f(0, 0, 0));
+		waterSource.setVolume(1);
+		waterSource.setPitch(1);
+		waterSource.setRolloff(0);
+		waterSource.setReferenceDistance(1);
+		waterSource.setMaxDistance(1000);		
+		waterSource.play(waterSound);
+		
+		Source birdSource = new Source();
+		birdSource.setLoop(true);
+		birdSource.setPosition(new Vector3f(150, 0, -150));
+		birdSource.setVelocity(new Vector3f(0, 0, 0));
+		birdSource.setVolume(1);
+		birdSource.setPitch(1);
+		birdSource.setRolloff(0);
+		birdSource.setReferenceDistance(1);
+		birdSource.setMaxDistance(1000);
+		birdSource.play(birdSound);
+		
+		Source boatSource = new Source();
+		boatSource.setLoop(true);
+		boatSource.setPosition(ship.getPosition());
+		boatSource.setVelocity(new Vector3f(0, 0, 0));
+		boatSource.setVolume(0.5f);
+		boatSource.setPitch(1);
+		boatSource.setRolloff(2);
+		boatSource.setReferenceDistance(20);
+		boatSource.setMaxDistance(1000);
+		boatSource.play(boatSound);
+		
+		Source canonSource = new Source();
+		canonSource.setLoop(false);
+		canonSource.setPosition(canon.getPosition());
+		canonSource.setVelocity(new Vector3f(0, 0, 0));
+		canonSource.setVolume(1);
+		canonSource.setPitch(1);
+		canonSource.setRolloff(1);
+		canonSource.setReferenceDistance(20);
+		canonSource.setMaxDistance(1000);
+		
+		Source hitSource = new Source();
+		hitSource.setLoop(false);
+		hitSource.setPosition(new Vector3f(0, 0, 0));
+		hitSource.setVelocity(new Vector3f(0, 0, 0));
+		hitSource.setVolume(10);
+		hitSource.setPitch(1);
+		hitSource.setRolloff(5);
+		hitSource.setReferenceDistance(20);
+		hitSource.setMaxDistance(1000);
+		
+		
+		FontType font = new FontType(loader.loadTexture("harrington"), new File("res/harrington.fnt"));
+		GUIText text = new GUIText("Battleship", 3f, font, new Vector2f(0f, 0f), 1f, true);
+		text.setColour(1, 1, 1);
 		
 		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
@@ -84,10 +170,7 @@ public class MainGameLoop {
 				gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-		// *****************************************
-
-		TexturedModel rocks = new TexturedModel(OBJFileLoader.loadOBJ("rocks", loader),
-				new ModelTexture(loader.loadTexture("rocks")));
+		// ****************************************
 
 		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
 		fernTextureAtlas.setNumberOfRows(2);
@@ -101,13 +184,12 @@ public class MainGameLoop {
 
 		fern.getTexture().setHasTransparency(true);
 
-		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightmap");
+		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "map");
 		List<Terrain> terrains = new ArrayList<Terrain>();
 		terrains.add(terrain);
 
-		TexturedModel cannonBall = new TexturedModel(OBJLoader.loadObjModel("dragon", loader),
+		TexturedModel cannonBall = new TexturedModel(OBJLoader.loadObjModel("canonBall", loader),
 				new ModelTexture(loader.loadTexture("white")));
-		//cannonBall.getTexture().setUseFakeLighting(true);
 
 		
 		
@@ -134,232 +216,214 @@ public class MainGameLoop {
 		
 		//************ENTITIES*******************
 		
-		Entity entity = new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f);
-		Entity entity2 = new Entity(boulderModel, new Vector3f(85, 10, -75), 0, 0, 0, 1f);
-		Entity entity3 = new Entity(crateModel, new Vector3f(65, 10, -75), 0, 0, 0, 0.04f);
-	//	normalMapEntities.add(entity);
-	//	normalMapEntities.add(entity2);
-	//	normalMapEntities.add(entity3);
+		Entity barrel = new Entity(barrelModel, new Vector3f(125, -10.5f, -115), 67, 0, 60, 0.3f);
+		Entity boulder = new Entity(boulderModel, new Vector3f(145, -11.5f, -115), 0, 90, -20, 0.5f);
+		Entity crate = new Entity(crateModel, new Vector3f(150, -10.5f, -170), 40, 60, 30, 0.02f);
+		normalMapEntities.add(barrel);
+		normalMapEntities.add(boulder);
+		normalMapEntities.add(crate);
 		
 				
-		Random random = new Random(5666778);
-		for (int i = 0; i < 60; i++) {
+		Random random = new Random(5);
+		float minHeight = -12;
+		for (int i = 0; i < 300; i++) {
 			if (i % 3 == 0) {
-				float x = random.nextFloat() * 150;
-				float z = random.nextFloat() * -150;
-				if ((x > 50 && x < 100) || (z < -50 && z > -100)) {
+				float x = random.nextFloat() * 300;
+				float z = random.nextFloat() * -150 - 150;
+				float y = terrain.getHeightOfTerrain(x, z);
+				if (y <= minHeight) {
 				} else {
-					float y = terrain.getHeightOfTerrain(x, z);
-
 					entities.add(new Entity(fern, 3, new Vector3f(x, y, z), 0,
 							random.nextFloat() * 360, 0, 0.9f));
 				}
 			}
 			if (i % 2 == 0) {
 
-				float x = random.nextFloat() * 150;
-				float z = random.nextFloat() * -150;
-				if ((x > 50 && x < 100) || (z < -50 && z > -100)) {
-
-				} else {
-					float y = terrain.getHeightOfTerrain(x, z);
+				float x = random.nextFloat() * 300;
+				float z = random.nextFloat() * -150 - 150;
+				float y = terrain.getHeightOfTerrain(x, z);
+				if (y <= minHeight) {
+				} else {					
 					entities.add(new Entity(bobble, 1, new Vector3f(x, y, z), 0,
 							random.nextFloat() * 360, 0, random.nextFloat() * 0.6f + 0.8f));
 				}
 			}
 		}
-		entities.add(new Entity(rocks, new Vector3f(75, 4.6f, -75), 0, 0, 0, 75));
-		
-		
-		// *********TERRAIN TEXTURE STUFF**********
-	/*	
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
-		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
-		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
-		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
-
-		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture,
-				gTexture, bTexture);
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-		
-		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightMap");
-		List<Terrain> terrains = new ArrayList<Terrain>();
-		terrains.add(terrain);
-
-		// ********************MODELS*********************
-
-		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
-		fernTextureAtlas.setNumberOfRows(2);
-		TexturedModel fern = new TexturedModel(OBJFileLoader.loadOBJ("fern", loader),
-				fernTextureAtlas);
-		fern.getTexture().setHasTransparency(true);
-		
-		TexturedModel pineModel = new TexturedModel(OBJFileLoader.loadOBJ("pine", loader), 
-				new ModelTexture(loader.loadTexture("pine")));
-		pineModel.getTexture().setHasTransparency(true);
-		
-		TexturedModel rocks = new TexturedModel(OBJFileLoader.loadOBJ("rocks", loader),
-				new ModelTexture(loader.loadTexture("rocks")));
-
-
-		TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader),
-				new ModelTexture(loader.loadTexture("lamp")));
-		lamp.getTexture().setUseFakeLighting(true);
-		
-		/*TexturedModel bobble = new TexturedModel(OBJFileLoader.loadOBJ("pine", loader),
-				new ModelTexture(loader.loadTexture("pine")));
-		bobble.getTexture().setHasTransparency(true);*/
-
-		
-
-		//Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightmap");
-		//List<Terrain> terrains = new ArrayList<Terrain>();
-		//terrains.add(terrain);
-
-		/*List<Entity> entities = new ArrayList<Entity>();
-		List<Entity> normalMapEntities = new ArrayList<Entity>();
-		
-		//******************NORMAL MAP MODELS************************
-		
-		TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader),
-				new ModelTexture(loader.loadTexture("barrel")));
-		barrelModel.getTexture().setNormalMap(loader.loadTexture("barrelNormal"));
-		barrelModel.getTexture().setShineDamper(10);
-		barrelModel.getTexture().setReflectivity(0.5f);
-		
-		TexturedModel crateModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("crate", loader),
-				new ModelTexture(loader.loadTexture("crate")));
-		crateModel.getTexture().setNormalMap(loader.loadTexture("crateNormal"));
-		crateModel.getTexture().setShineDamper(10);
-		crateModel.getTexture().setReflectivity(0.5f);
-		
-		TexturedModel boulderModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("boulder", loader),
-				new ModelTexture(loader.loadTexture("boulder")));
-		boulderModel.getTexture().setNormalMap(loader.loadTexture("boulderNormal"));
-		boulderModel.getTexture().setShineDamper(10);
-		boulderModel.getTexture().setReflectivity(0.5f);
-		
-		
-		//************ENTITIES*******************
-		
-		Entity entity = new Entity(barrelModel, new Vector3f(75, 10, -75), 0, 0, 0, 1f);
-		Entity entity2 = new Entity(boulderModel, new Vector3f(85, 10, -75), 0, 0, 0, 1f);
-		Entity entity3 = new Entity(crateModel, new Vector3f(65, 10, -75), 0, 0, 0, 0.04f);
-		normalMapEntities.add(entity);
-		normalMapEntities.add(entity2);
-		normalMapEntities.add(entity3);
-		
-		Random random = new Random(5666778);
-		for (int i = 0; i < 320; i++) {
-			if (i % 3 == 0) {
-				float x = random.nextFloat() * 800;
-				float z = random.nextFloat() * -800;
-				
-				float y = terrain.getHeightOfTerrain(x, z);
-				if(y > 0){
-					entities.add(new Entity(fern, 3, new Vector3f(x, y, z), 0,
-							random.nextFloat() * 360, 0, 0.9f));
-				}
-			}
-			if (i % 1 == 0) {
-				float x = random.nextFloat() * 800;
-				float z = random.nextFloat() * -800;
-				if ((x > 50 && x < 100) || (z < -50 && z > -100)) {
-
-				} else {
-					float y = terrain.getHeightOfTerrain(x, z);
-					if(y > 0){
-						entities.add(new Entity(pineModel, 1, new Vector3f(x, y, z), 0,
-								random.nextFloat() * 360, 0, random.nextFloat() * 0.6f + 0.8f));
-					}
-				}
-			}
-		}
-		for (int i = 0; i < 30; i++) {
-			float x = 400 + random.nextFloat() * 200;
-			float z = -400 + random.nextFloat() * 200;
-			
-			float y = terrain.getHeightOfTerrain(x, z);
-			normalMapEntities.add(new Entity(boulderModel, new Vector3f(x, y, z), random.nextFloat() * 360, 0, 0, 0.5f + random.nextFloat()));
-		}
-		//entities.add(new Entity(rocks, new Vector3f(75, 4.6f, -75), 0, 0, 0, 75));
-		*/
 		//*******************OTHER SETUP***************
 
 		List<Light> lights = new ArrayList<Light>();
-		Light sun = new Light(new Vector3f(1000000, 1500000, -1000000), new Vector3f(1.3f, 1.3f, 1.3f));
+		Light sun = new Light(new Vector3f(-100, 1500000, 1000000), new Vector3f(1.3f, 1.3f, 1.3f));
 		lights.add(sun);
-
-		//entities.add(player);
 		
 		List<GuiTexture> guiTextures = new ArrayList<GuiTexture>();
-		GuiTexture shadowMap = new GuiTexture(renderer.getShadowMapTexture(), 
-				new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f));
-		//guiTextures.add(shadowMap);
+		
+		GuiTexture health = new GuiTexture(loader.loadTexture("health_full"), new Vector2f(0.75f, 0.9f), new Vector2f(0.5f*0.3f, 0.2f*0.3f));
+		guiTextures.add(health);
+				
+				
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
-		//MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 	
 		//**********Water Renderer Set-up************************
 		
-		/*WaterFrameBuffers buffers = new WaterFrameBuffers();
-		WaterShader waterShader = new WaterShader();
-		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), buffers);
-		List<WaterTile> waters = new ArrayList<WaterTile>();
-		for (int i = 1; i < 5; i++) {
-			for (int j = 1; j < 5; j++) {
-				waters.add(new WaterTile(i * 160, -j * 160, -1.5f));
-			}
-		}*/
 		WaterFrameBuffers buffers = new WaterFrameBuffers();
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), buffers);
 		List<WaterTile> waters = new ArrayList<WaterTile>();
-		WaterTile water = new WaterTile(75, -75, 0);
+		WaterTile water = new WaterTile(150, -150, -10);
 		waters.add(water);
 		
 		ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("smoke"), 5,true);
 		
-		ParticleSystem system = new ParticleSystem(particleTexture, 1000, 25, 0.2f, 2, 3.6f);
+		ParticleSystem system = new ParticleSystem(particleTexture, 1000, 15, 0.5f, 1, 3.6f);
 		
-		system.setLifeError(0.1f);
-		system.setDirection(new Vector3f(0, 1, 0), 0.1f);
-		system.setSpeedError(0.25f);
-		system.setScaleError(0.5f);
+		system.setLifeError(0.5f);
+		system.setDirection(new Vector3f(0, 1, 0), 0.01f);
+		system.setSpeedError(0.125f);
+		system.setScaleError(0.15f);
 		system.randomizeRotation();
 		
 		//****************Game Loop Below*********************
 
 		Entity cb = null;
+		
+		// phi
+		double phi = 0;
+		boolean shot = false;
+		boolean launched = false;
+		Vector3f speed = new Vector3f(0,0,0);
+		int numberOfBullets = 0;
+		float boatRadius = 30;
+		
+		int enemyLives = 3;
+		boolean defeated = false;
 		while (!Display.isCloseRequested()) {
 			//player.move(terrain);
 			camera.move();
 			//picker.update();
+			float delta = DisplayManager.getFrameTimeSeconds();
+			
+			/**
+			 * 	Audio update
+			 * 
+			 */
+			
+			boatSource.setPosition(ship.getPosition());			
+			
+			/**
+			 * 	Game logics
+			 * 
+			 */
+			
 			if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)){
 				break;
 			}
 			
-			if(Keyboard.isKeyDown(Keyboard.KEY_A) && canon.getRotY() < -45){
-				canon.increaseRotation(0, 1f, 0);
+			if(Keyboard.isKeyDown(Keyboard.KEY_A) && canon.getRotY() < 45){
+				canon.increaseRotation(0, 80f * delta, 0);
 			}
-			if(Keyboard.isKeyDown(Keyboard.KEY_D) && canon.getRotY() > -135){
-				canon.increaseRotation(0, -1f, 0);
+			if(Keyboard.isKeyDown(Keyboard.KEY_D) && canon.getRotY() > -45){
+				canon.increaseRotation(0, -80f * delta, 0);
 			}
-			if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)){
-				cb = new Entity(cannonBall, 1, new Vector3f(canon.getPosition()), 0, 0, 0, 0.2f);
-				entities.add(cb);
+			
+			if(Keyboard.isKeyDown(Keyboard.KEY_SPACE) && !shot){
+				if(numberOfBullets < 1)
+				{
+					cb = new Entity(cannonBall, 1, new Vector3f(canon.getPosition().x,canon.getPosition().y,canon.getPosition().z), 0, 0, 0, 0.008f);
+					numberOfBullets++;
+					entities.add(cb);
+					shot = !shot;
+					launched = true;
+					speed = new Vector3f((float)-Math.sin(Math.toRadians(canon.getRotY()))*200,20,(float)-Math.cos(Math.toRadians(canon.getRotY()))*200);
+					canonSource.play(shotSound);
+				}
+			}
+			if(launched && cb.getPosition().y < -12)
+			{
+				entities.remove(entities.size()-numberOfBullets);
+				numberOfBullets--;
+				if(numberOfBullets == 0)
+				{
+					cb = null;
+					launched = false;
+				}
+			}
+			if(launched)
+			{				
+				cb.increasePosition(speed.x*delta, speed.y*delta, speed.z*delta);
+				speed.y = speed.y - 9.81f*delta*10;
+				// Collision detection
+				float dist =(cb.getPosition().x - shipPositionStart.x)*(cb.getPosition().x - shipPositionStart.x) +
+							(cb.getPosition().y - shipPositionStart.y)*(cb.getPosition().y - shipPositionStart.y) +
+							(cb.getPosition().z - shipPositionStart.z)*(cb.getPosition().z - shipPositionStart.z);
+				if(cb.getPosition().y < 8 && dist < boatRadius*boatRadius && intersect(prepareAABB(ship), ship, cb))
+				{					
+					if(enemyLives >= 1) enemyLives--;
+					if(enemyLives == 0)
+					{
+						boatSource.delete();
+						GUIText winningText = new GUIText("Gewonnen!", 3f, font, new Vector2f(0f, 0.5f), 1f, true);
+						winningText.setColour(1, 1, 1);
+						defeated = true;
+					}
+					health.setTexture(loader.loadTexture("health_"+enemyLives));
+					hitSource.setPosition(cb.getPosition());
+					hitSource.play(hitSound);
+					entities.remove(entities.size()-numberOfBullets);
+					numberOfBullets--;
+					if(numberOfBullets == 0)
+					{
+						cb = null;
+						launched = false;
+					}
+				}
+			}
+			if(!Keyboard.isKeyDown(Keyboard.KEY_SPACE) && shot)
+			{
+				shot = !shot;
+				canonSource.setPosition(canon.getPosition());
+				system.generateParticles(canon.getPosition());
 			}
 			if(Keyboard.isKeyDown(Keyboard.KEY_N)){
-				cb.increasePosition(0.1f,0,0);
+				canon.setPosition(new Vector3f(135, -10.5f, -110));
+				canon.setRotY(0);
+			}
+			float moveSpeed = 2f;
+			if(Keyboard.isKeyDown(Keyboard.KEY_UP)){
+				canon.increasePosition(0, 0, -moveSpeed);
+				AudioMaster.setListenerData(canon.getPosition());
+			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)){
+				canon.increasePosition(0, 0, moveSpeed);
+				AudioMaster.setListenerData(canon.getPosition());
+			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)){
+				canon.increasePosition(-moveSpeed, 0, 0);
+				AudioMaster.setListenerData(canon.getPosition());
+			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)){
+				canon.increasePosition(moveSpeed, 0, 0);
+				AudioMaster.setListenerData(canon.getPosition());
 			}
 			
-			system.generateParticles(new Vector3f(canon.getPosition().x, canon.getPosition().y,canon.getPosition().z));
-			//system.generateParticles(new Vector3f(200, 10, -100));
+			phi += 0.8f * delta;
+			phi %= 360;
+			if(!defeated)
+			{
+				// ship movement
+				ship.setRotY((float)-phi*57.3f);
+				ship.setPosition(new Vector3f(
+						shipPositionStart.x + (float)Math.cos(phi) * 30,
+						shipPositionStart.y,
+						shipPositionStart.z + (float)Math.sin(phi) * 30));
+			}
+			else system.generateParticles(ship.getPosition());
+			
+			crate.setPosition(new Vector3f(shipPositionStart.x, (shipPositionStart.y - 1.75f) + (float)Math.cos(phi*3)*0.5f, shipPositionStart.z));
+			
+			//system.generateParticles(new Vector3f(canon.getPosition().x, canon.getPosition().y,canon.getPosition().z));
+			
 			ParticleMaster.update(camera);
 			
-			
-			//entity.increaseRotation(0, 1, 0);
-			//entity2.increaseRotation(0, 1, 0);
-			//entity3.increaseRotation(0, 1, 0);
 			renderer.renderShadowMap(entities, sun);
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 			
@@ -391,6 +455,12 @@ public class MainGameLoop {
 		}
 
 		//*********Clean Up Below**************
+		waterSource.delete();
+		birdSource.delete();
+		boatSource.delete();
+		canonSource.delete();
+		hitSource.delete();
+		AudioMaster.cleanUP();
 		ParticleMaster.cleanUp();
 		TextMaster.cleanUp();
 		buffers.cleanUp();
@@ -401,6 +471,45 @@ public class MainGameLoop {
 		DisplayManager.closeDisplay();
 
 	}
-
-
+	
+	public static boolean intersect(Vector3f[] AABB, Entity target, Entity sphere)
+	{
+		// Calculate position of rotated sphere
+		float sX = sphere.getPosition().x;
+		float sY = sphere.getPosition().y;
+		float sZ = sphere.getPosition().z;
+		
+		float tX = target.getPosition().x;
+		float tY = target.getPosition().y;
+		float tZ = target.getPosition().z;
+		
+		float phi = target.getRotY();
+		
+		float sX_ = (sX - tX)*(float)Math.cos(Math.toRadians(phi)) - (sZ - tZ)*(float)Math.sin(Math.toRadians(phi)) + tX;
+		float sY_ = sY;
+		float sZ_ = (sZ - tZ)*(float)Math.cos(Math.toRadians(phi)) + (sX - tX)*(float)Math.sin(Math.toRadians(phi)) + tZ;
+		
+		// Check if AABB intersects with rSphere
+		float dist = 0;
+		
+		if(sX_ < AABB[0].x) dist += (sX_ - AABB[0].x)*(sX_ - AABB[0].x);
+		else if(sX_ > AABB[1].x) dist += (sX_ - AABB[1].x)*(sX_ - AABB[1].x);
+		
+		if(sY_ < AABB[0].y) dist += (sY_ - AABB[0].y)*(sY_ - AABB[0].y);
+		else if(sY_ > AABB[1].y) dist += (sY_ - AABB[1].y)*(sY_ - AABB[1].y);
+		
+		if(sZ_ < AABB[0].z) dist += (sZ_ - AABB[0].z)*(sZ_ - AABB[0].z);
+		else if(sZ_ > AABB[1].z) dist += (sZ_ - AABB[1].z)*(sZ_ - AABB[1].z);
+		
+		return dist <= 4;
+	}
+	
+	public static Vector3f[] prepareAABB(Entity e)
+	{
+		float x = e.getPosition().x;
+		float y = e.getPosition().y;
+		float z = e.getPosition().z;
+		Vector3f[] v = {new Vector3f(x-4.1f,y-1.7f,z-10.4f),new Vector3f(x+4.1f,y+1.7f,z+10.4f)};
+		return v;
+	}
 }

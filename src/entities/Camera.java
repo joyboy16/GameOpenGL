@@ -6,11 +6,11 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Camera {
 	
-	private float distanceFromSource = 10;
+	private float distanceFromSource = 5;
 	private float angleAroundPlayer = 0;
 	
 	private Vector3f position = new Vector3f(0, 0, 0);
-	private float pitch = 20;
+	private float pitch = 15;
 	private float yaw = 0;
 	private float roll;
 	
@@ -76,11 +76,11 @@ public class Camera {
 	}
 	
 	private float calculateHorizontalDistance(){
-		return (float) (distanceFromSource * Math.cos(Math.toRadians(pitch+4)));
+		return (float) ((distanceFromSource) * Math.cos(Math.toRadians(pitch+45)));
 	}
 	
 	private float calculateVerticalDistance(){
-		return (float) (distanceFromSource * Math.sin(Math.toRadians(pitch+4)));
+		return (float) ((distanceFromSource + 5) * Math.sin(Math.toRadians(pitch+4)));
 	}
 	
 	private void calculateZoom(){
@@ -105,7 +105,7 @@ public class Camera {
 	
 	private void calculateAngleAroundPlayer(){
 		if(Mouse.isButtonDown(0)){
-			float angleChange = Mouse.getDX() * 0.3f;
+			float angleChange = Mouse.getDX() * 0.2f;
 			angleAroundPlayer -= angleChange;
 		}
 	}

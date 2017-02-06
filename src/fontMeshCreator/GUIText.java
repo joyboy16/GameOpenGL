@@ -183,5 +183,12 @@ public class GUIText {
 	protected String getTextString() {
 		return textString;
 	}
+	
+	public void setText(String string)
+	{
+		remove();
+		textString = string;
+		TextMaster.loadText(this);
+	}
 
 }

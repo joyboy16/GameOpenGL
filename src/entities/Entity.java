@@ -1,7 +1,7 @@
 package entities;
 
 import models.TexturedModel;
-import physics.PhysicsModel;
+//import physics.PhysicsModel;
 
 import org.lwjgl.util.vector.Vector3f;
 
@@ -14,7 +14,7 @@ public class Entity {
 	
 	private int textureIndex = 0;
 	
-	private PhysicsModel physics;
+	//private PhysicsModel physics;
 
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
 			float scale) {
@@ -83,7 +83,8 @@ public class Entity {
 	}
 
 	public void setRotX(float rotX) {
-		this.rotX = rotX;
+		while(rotX < 0) rotX += 360;
+		this.rotX = rotX%360;
 	}
 
 	public float getRotY() {
@@ -91,7 +92,8 @@ public class Entity {
 	}
 
 	public void setRotY(float rotY) {
-		this.rotY = rotY;
+		while(rotY < 0) rotY += 360;
+		this.rotY = rotY%360;
 	}
 
 	public float getRotZ() {
@@ -99,7 +101,8 @@ public class Entity {
 	}
 
 	public void setRotZ(float rotZ) {
-		this.rotZ = rotZ;
+		while(rotZ < 0) rotZ += 360;
+		this.rotZ = rotZ%360;
 	}
 
 	public float getScale() {

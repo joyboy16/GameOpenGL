@@ -24,7 +24,7 @@ import models.TexturedModel;
  */
 public class ShadowMapMasterRenderer {
 
-	private static final int SHADOW_MAP_SIZE = 4096;
+	private static final int SHADOW_MAP_SIZE = 16384;
 
 	private ShadowFrameBuffer shadowFbo;
 	private ShadowShader shader;
