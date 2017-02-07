@@ -1,7 +1,9 @@
 package battleship;
 
+import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,7 +17,10 @@ import org.lwjgl.util.glu.Sphere;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
 
 import audio.AudioMaster;
 import audio.Source;
@@ -159,7 +164,6 @@ public class MainGameLoop {
 		text.setColour(1, 1, 1);
 		//GUIImage.render("title");
 		
-		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
 		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
@@ -271,15 +275,26 @@ public class MainGameLoop {
 		WaterTile water = new WaterTile(150, -150, -10);
 		waters.add(water);
 		
-		ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("smoke"), 5,true);
+		ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("smoke"), 4,false);
+		ParticleSystem system = new ParticleSystem(particleTexture, 800, 12, 0.5f, 1, 0.6f);
 		
-		ParticleSystem system = new ParticleSystem(particleTexture, 1000, 15, 0.5f, 1, 3.6f);
+		ParticleTexture fireTexture = new ParticleTexture(loader.loadTexture("fire"), 7,false);
+		ParticleSystem systemFire = new ParticleSystem(fireTexture, 1000, 50, 0.5f, 1, 3.6f);
+		 
 		
 		system.setLifeError(0.5f);
 		system.setDirection(new Vector3f(0, 1, 0), 0.01f);
 		system.setSpeedError(0.125f);
 		system.setScaleError(0.15f);
 		system.randomizeRotation();
+		
+
+		systemFire.setLifeError(0.5f);
+		systemFire.setDirection(new Vector3f(0, 1, 0), 0.01f);
+		systemFire.setSpeedError(0.125f);
+		systemFire.setScaleError(0.15f);
+		systemFire.randomizeRotation();
+		
 		
 		//****************Game Loop Below*********************
 
@@ -378,7 +393,7 @@ public class MainGameLoop {
 			{
 				shot = !shot;
 				canonSource.setPosition(canon.getPosition());
-				system.generateParticles(canon.getPosition());
+				system.generateParticles(new Vector3f(canon.getPosition().x,canon.getPosition().y+2.8f,canon.getPosition().z+1.0f));
 			}
 			if(Keyboard.isKeyDown(Keyboard.KEY_N)){
 				canon.setPosition(new Vector3f(135, -10.5f, -110));
@@ -413,7 +428,7 @@ public class MainGameLoop {
 						shipPositionStart.y,
 						shipPositionStart.z + (float)Math.sin(phi) * 30));
 			}
-			else system.generateParticles(ship.getPosition());
+			else systemFire.generateParticles(ship.getPosition());
 			
 			crate.setPosition(new Vector3f(shipPositionStart.x, (shipPositionStart.y - 1.75f) + (float)Math.cos(phi*3)*0.5f, shipPositionStart.z));
 			
@@ -446,6 +461,8 @@ public class MainGameLoop {
 			ParticleMaster.renderParticles(camera);
 			
 			guiRenderer.render(guiTextures);
+			//Color.white.bind();
+			// font2.drawString(0f, 0f, "BATTLESHIP");
 			TextMaster.render();
 			
 			DisplayManager.updateDisplay();
