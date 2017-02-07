@@ -14,7 +14,7 @@ public class Entity {
 	
 	private int textureIndex = 0;
 	
-	//private PhysicsModel physics;
+	public static final float GRAVITY = -50;
 
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
 			float scale) {

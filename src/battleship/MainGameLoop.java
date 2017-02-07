@@ -1,6 +1,7 @@
 package battleship;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -14,14 +15,15 @@ import org.lwjgl.util.glu.Sphere;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
+import org.newdawn.slick.opengl.TextureLoader;
 
 import audio.AudioMaster;
 import audio.Source;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
-import entities.Player;
 import fontMeshCreator.FontType;
+import fontMeshCreator.GUIImage;
 import fontMeshCreator.GUIText;
 import fontRendering.TextMaster;
 import guis.GuiRenderer;
@@ -61,10 +63,6 @@ public class MainGameLoop {
 		
 		// ship start
 		Vector3f shipPositionStart = new Vector3f(150, -9.5f, -170);
-		
-		/*TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("person", loader), 
-				new ModelTexture(loader.loadTexture("playerTexture")));
-		Player player = new Player(playerModel, new Vector3f(75, 5, -75), 0, 100, 0, 0.6f);*/
 		
 		List<Entity> entities = new ArrayList<Entity>();
 		List<Entity> normalMapEntities = new ArrayList<Entity>();
@@ -159,6 +157,7 @@ public class MainGameLoop {
 		FontType font = new FontType(loader.loadTexture("harrington"), new File("res/harrington.fnt"));
 		GUIText text = new GUIText("Battleship", 3f, font, new Vector2f(0f, 0f), 1f, true);
 		text.setColour(1, 1, 1);
+		//GUIImage.render("title");
 		
 		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
@@ -297,9 +296,7 @@ public class MainGameLoop {
 		int enemyLives = 3;
 		boolean defeated = false;
 		while (!Display.isCloseRequested()) {
-			//player.move(terrain);
 			camera.move();
-			//picker.update();
 			float delta = DisplayManager.getFrameTimeSeconds();
 			
 			/**
@@ -361,7 +358,7 @@ public class MainGameLoop {
 					if(enemyLives == 0)
 					{
 						boatSource.delete();
-						GUIText winningText = new GUIText("Gewonnen!", 3f, font, new Vector2f(0f, 0.5f), 1f, true);
+						GUIText winningText = new GUIText("SIEG!", 3f, font, new Vector2f(0f, 0.5f), 1f, true);
 						winningText.setColour(1, 1, 1);
 						defeated = true;
 					}

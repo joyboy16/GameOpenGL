@@ -14,12 +14,8 @@ public class Camera {
 	private float yaw = 0;
 	private float roll;
 	
-	private Player player;
 	private Entity entity;
 	
-	public Camera(Player player){
-		this.player = player;
-	}
 	
 	public Camera(Entity entity){
 		this.entity = entity;
@@ -57,14 +53,7 @@ public class Camera {
 		return roll;
 	}
 	
-	private void calculateCameraPosition(float horizDistance, float verticDistance){
-		float theta = player.getRotY() + angleAroundPlayer;
-		float offsetX = (float) (horizDistance * Math.sin(Math.toRadians(theta)));
-		float offsetZ = (float) (horizDistance * Math.cos(Math.toRadians(theta)));
-		position.x = player.getPosition().x - offsetX;
-		position.z = player.getPosition().z - offsetZ;
-		position.y = player.getPosition().y + verticDistance + 4;
-	}
+	
 	
 	private void calculateLimitedCameraPosition(float horizDistance, float verticDistance){
 		float theta = entity.getRotY();
