@@ -12,9 +12,9 @@ import time.Time;
 
 public class DisplayManager {
 	
-	private static final int WIDTH = 1280;
-	private static final int HEIGHT = 720;
-	private static final int FPS_CAP = 60;
+	private static final int WIDTH = 1920;
+	private static final int HEIGHT = 1080;
+	private static int FPS_CAP = 60;
 	
 	private static long lastFrameTime;
 	private static float delta;
@@ -31,9 +31,9 @@ public class DisplayManager {
 		
 		try {
 			Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
-			//Display.setFullscreen(true);
+			Display.setFullscreen(true);
 			Display.create(new PixelFormat(), attribs);
-			Display.setTitle("Our First Display!");
+			Display.setTitle("Battleship");
 			GL11.glEnable(GL13.GL_MULTISAMPLE);
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -41,6 +41,11 @@ public class DisplayManager {
 		
 		GL11.glViewport(0,0, WIDTH, HEIGHT);
 		lastFrameTime = getCurrentTime();
+	}
+	
+	public static void setMaxFPS(int fps)
+	{
+		FPS_CAP = fps;
 	}
 	
 	public static void updateDisplay(){

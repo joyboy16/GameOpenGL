@@ -28,7 +28,6 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import fontMeshCreator.FontType;
-import fontMeshCreator.GUIImage;
 import fontMeshCreator.GUIText;
 import fontRendering.TextMaster;
 import guis.GuiRenderer;
@@ -160,8 +159,8 @@ public class MainGameLoop {
 		
 		
 		FontType font = new FontType(loader.loadTexture("harrington"), new File("res/harrington.fnt"));
-		GUIText text = new GUIText("Battleship", 3f, font, new Vector2f(0f, 0f), 1f, true);
-		text.setColour(1, 1, 1);
+		//GUIText text = new GUIText("Battleship", 3f, font, new Vector2f(0f, 0f), 1f, true);
+		//text.setColour(1, 1, 1);
 		//GUIImage.render("title");
 		
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
@@ -262,7 +261,8 @@ public class MainGameLoop {
 		
 		GuiTexture health = new GuiTexture(loader.loadTexture("health_full"), new Vector2f(0.75f, 0.9f), new Vector2f(0.5f*0.3f, 0.2f*0.3f));
 		guiTextures.add(health);
-				
+		GuiTexture title = new GuiTexture(loader.loadTexture("title"), new Vector2f(-0.65f, -0.9f), new Vector2f(0.30f, 0.30f));
+		guiTextures.add(title);
 				
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 	
@@ -279,7 +279,7 @@ public class MainGameLoop {
 		ParticleSystem system = new ParticleSystem(particleTexture, 800, 12, 0.5f, 1, 0.6f);
 		
 		ParticleTexture fireTexture = new ParticleTexture(loader.loadTexture("fire"), 7,false);
-		ParticleSystem systemFire = new ParticleSystem(fireTexture, 1000, 50, 0.5f, 1, 3.6f);
+		ParticleSystem systemFire = new ParticleSystem(fireTexture, 100, 20, 0.5f, 1, 3.6f);
 		 
 		
 		system.setLifeError(0.5f);
@@ -310,9 +310,12 @@ public class MainGameLoop {
 		
 		int enemyLives = 3;
 		boolean defeated = false;
+		GUIText winningText = null;
+		float delta = 0;
+		float moveSpeed = 2f;
 		while (!Display.isCloseRequested()) {
 			camera.move();
-			float delta = DisplayManager.getFrameTimeSeconds();
+			delta = DisplayManager.getFrameTimeSeconds();
 			
 			/**
 			 * 	Audio update
@@ -367,13 +370,13 @@ public class MainGameLoop {
 				float dist =(cb.getPosition().x - shipPositionStart.x)*(cb.getPosition().x - shipPositionStart.x) +
 							(cb.getPosition().y - shipPositionStart.y)*(cb.getPosition().y - shipPositionStart.y) +
 							(cb.getPosition().z - shipPositionStart.z)*(cb.getPosition().z - shipPositionStart.z);
-				if(cb.getPosition().y < 8 && dist < boatRadius*boatRadius && intersect(prepareAABB(ship), ship, cb))
+				if(cb.getPosition().y < 8 && dist < (boatRadius+10)*(boatRadius+10) && intersect(prepareAABB(ship), ship, cb))
 				{					
 					if(enemyLives >= 1) enemyLives--;
 					if(enemyLives == 0)
 					{
-						boatSource.delete();
-						GUIText winningText = new GUIText("SIEG!", 3f, font, new Vector2f(0f, 0.5f), 1f, true);
+						boatSource.pause();
+						winningText = new GUIText("SIEG!", 3f, font, new Vector2f(0f, 0.5f), 1f, true);
 						winningText.setColour(1, 1, 1);
 						defeated = true;
 					}
@@ -399,7 +402,28 @@ public class MainGameLoop {
 				canon.setPosition(new Vector3f(135, -10.5f, -110));
 				canon.setRotY(0);
 			}
-			float moveSpeed = 2f;
+			if(Keyboard.isKeyDown(Keyboard.KEY_L)){
+				DisplayManager.setMaxFPS(15);
+			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_H)){
+				DisplayManager.setMaxFPS(60);
+			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_M)){
+				DisplayManager.setMaxFPS(30);
+			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_R)){
+				//Resetting every
+				defeated = false;
+				enemyLives = 3;
+				health.setTexture(loader.loadTexture("health_"+enemyLives));
+				boatSource.resume();
+				phi = 0;
+				if(winningText != null)
+				{
+					winningText.remove();
+				}
+			}
+			
 			if(Keyboard.isKeyDown(Keyboard.KEY_UP)){
 				canon.increasePosition(0, 0, -moveSpeed);
 				AudioMaster.setListenerData(canon.getPosition());
@@ -432,8 +456,6 @@ public class MainGameLoop {
 			
 			crate.setPosition(new Vector3f(shipPositionStart.x, (shipPositionStart.y - 1.75f) + (float)Math.cos(phi*3)*0.5f, shipPositionStart.z));
 			
-			//system.generateParticles(new Vector3f(canon.getPosition().x, canon.getPosition().y,canon.getPosition().z));
-			
 			ParticleMaster.update(camera);
 			
 			renderer.renderShadowMap(entities, sun);
@@ -461,8 +483,6 @@ public class MainGameLoop {
 			ParticleMaster.renderParticles(camera);
 			
 			guiRenderer.render(guiTextures);
-			//Color.white.bind();
-			// font2.drawString(0f, 0f, "BATTLESHIP");
 			TextMaster.render();
 			
 			DisplayManager.updateDisplay();
