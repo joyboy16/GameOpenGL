@@ -25,13 +25,21 @@ import textures.DataTexture;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 
-public class Loader {
-
+public class Loader
+{
+	/********************************************************
+	 * 						NOTE:							*
+	 *  this class was highly inspired from online sources	*
+	 * 														*
+	 ********************************************************/
 	private List<Integer> vaos = new ArrayList<Integer>();
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
 
-	public int loadToVAO(float[] positions, float[] textureCoords) {
+	// Constructor #1
+	public int loadToVAO(float[] positions, float[] textureCoords)
+	{
+		// store data in vao
 		int vaoID = createVAO();
 		storeDataInAttributeList(0, 2, positions);
 		storeDataInAttributeList(1, 2, textureCoords);
@@ -39,8 +47,20 @@ public class Loader {
 		return vaoID;
 	}
 	
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals,
-			int[] indices) {
+	// Constructor #4
+	public RawModel loadToVAO(float[] positions, int dimensions)
+	{
+		// store data in vao
+		int vaoID = createVAO();
+		this.storeDataInAttributeList(0, dimensions, positions);
+		unbindVAO();
+		return new RawModel(vaoID, positions.length / dimensions);
+	}
+	
+	// Constructor #2
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices)
+	{
+		// store data in vao
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
@@ -50,8 +70,10 @@ public class Loader {
 		return new RawModel(vaoID, indices.length);
 	}
 	
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] tangents,
-			int[] indices) {
+	// Constructor #3
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] tangents, int[] indices)
+	{
+		// store data in vao
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
@@ -62,123 +84,148 @@ public class Loader {
 		return new RawModel(vaoID, indices.length);
 	}
 
-	public int createEmptyVbo(int floatCount) {
+	public int createEmptyVbo(int floatCount)
+	{
+		// new vbo for raw data
 		int vbo = GL15.glGenBuffers();
 		vbos.add(vbo);
+		// openGL code
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, floatCount * 4, GL15.GL_STREAM_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		return vbo;
-
 	}
 	
-	public void addInstancedAttribute(int vao, int vbo, int attribute, int dataSize, 
-			int instancedDataLength, int offset){
+	public void addInstAttr(int vao, int vbo, int attribute, int dataSize, int instancedDataLength, int offset)
+	{
+		// openGL code
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
 		GL30.glBindVertexArray(vao);
-		GL20.glVertexAttribPointer(attribute, dataSize, GL11.GL_FLOAT, false, instancedDataLength*4,
-				offset*4);
+		GL20.glVertexAttribPointer(attribute, dataSize, GL11.GL_FLOAT, false, instancedDataLength*4, offset*4);
 		GL33.glVertexAttribDivisor(attribute,1);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		GL30.glBindVertexArray(0);
 		
 	}
 	
-	public void updateVbo(int vbo, float[] data, FloatBuffer buffer){
+	public void updateVbo(int vbo, float[] data, FloatBuffer buffer)
+	{
+		// buffer
 		buffer.clear();
 		buffer.put(data);
 		buffer.flip();
+		// openGL code
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER , vbo);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer.capacity()*4, GL15.GL_STREAM_DRAW);
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, buffer);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
-	
-	public RawModel loadToVAO(float[] positions, int dimensions) {
-		int vaoID = createVAO();
-		this.storeDataInAttributeList(0, dimensions, positions);
-		unbindVAO();
-		return new RawModel(vaoID, positions.length / dimensions);
-	}
 
-	public int loadTexture(String fileName) {
+	public int loadTexture(String fileName)
+	{
+		// new texture
 		Texture texture = null;
-		try {
-			texture = TextureLoader.getTexture("PNG", new FileInputStream("res/" + fileName
-					+ ".png"));
-			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER,
-					GL11.GL_LINEAR_MIPMAP_LINEAR);
+		try
+		{
+			texture = TextureLoader.getTexture("PNG", new FileInputStream("res/" + fileName	+ ".png"));
+			// openGL code
 			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0f);
-		} catch (Exception e) {
+			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
-			System.err.println("Tried to load texture " + fileName + ".png , didn't work");
+			System.err.println("Textur " + fileName + ".png konnte nicht geladen werden");
 			System.exit(-1);
 		}
 		textures.add(texture.getTextureID());
+		// return texture
 		return texture.getTextureID();
 	}
 
-	public void cleanUp() {
-		for (int vao : vaos) {
+	public void cleanUp()
+	{
+		// clean everything up
+		for (int vao : vaos)
+		{
 			GL30.glDeleteVertexArrays(vao);
 		}
-		for (int vbo : vbos) {
+		for (int vbo : vbos)
+		{
 			GL15.glDeleteBuffers(vbo);
 		}
-		for (int texture : textures) {
+		for (int texture : textures)
+		{
 			GL11.glDeleteTextures(texture);
 		}
 	}
 
-	public int loadCubeMap(String[] textureFiles) {
+	public int loadCubeMap(String[] textureFiles)
+	{
+		// skybox
 		int texID = GL11.glGenTextures();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
 
-		for (int i = 0; i < textureFiles.length; i++) {
+		// load 6 textures
+		for (int i = 0; i < textureFiles.length; i++)
+		{
 			DataTexture data = decodeTextureFile("res/" + textureFiles[i] + ".png");
-			GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA, data.getWidth(), data.getHeight(), 0,
-					GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data.getBuffer());
+			GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA, data.getWidth(), data.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data.getBuffer());
 		}
 		
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		// openGL code
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		textures.add(texID);
+		// return skybox
 		return texID;
 	}
 
-	private DataTexture decodeTextureFile(String fileName) {
-		int width = 0;
-		int height = 0;
+	private DataTexture decodeTextureFile(String fileName)
+	{
+		int w = 0;
+		int h = 0;
 		ByteBuffer buffer = null;
-		try {
+		try
+		{
 			FileInputStream in = new FileInputStream(fileName);
+			
+			// read png
 			PNGDecoder decoder = new PNGDecoder(in);
-			width = decoder.getWidth();
-			height = decoder.getHeight();
-			buffer = ByteBuffer.allocateDirect(4 * width * height);
-			decoder.decode(buffer, width * 4, Format.RGBA);
+			w = decoder.getWidth();
+			h = decoder.getHeight();
+			
+			// buffer
+			buffer = ByteBuffer.allocateDirect(4 * w * h);
+			decoder.decode(buffer, w * 4, Format.RGBA);
 			buffer.flip();
+			// close reader
 			in.close();
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
-			System.err.println("Tried to load texture " + fileName + ", didn't work");
+			System.err.println("Textur " + fileName + ".png konnte nicht geladen werden");
 			System.exit(-1);
 		}
-		return new DataTexture(buffer, width, height);
+		// return textureData
+		return new DataTexture(buffer, w, h);
 	}
 
-	private int createVAO() {
+	private int createVAO()
+	{
 		int vaoID = GL30.glGenVertexArrays();
 		vaos.add(vaoID);
 		GL30.glBindVertexArray(vaoID);
 		return vaoID;
 	}
 
-	private void storeDataInAttributeList(int attributeNumber, int coordinateSize, float[] data) {
+	private void storeDataInAttributeList(int attributeNumber, int coordinateSize, float[] data)
+	{
 		int vboID = GL15.glGenBuffers();
 		vbos.add(vboID);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
@@ -188,11 +235,13 @@ public class Loader {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 
-	private void unbindVAO() {
+	private void unbindVAO()
+	{
 		GL30.glBindVertexArray(0);
 	}
 
-	private void bindIndicesBuffer(int[] indices) {
+	private void bindIndicesBuffer(int[] indices)
+	{
 		int vboID = GL15.glGenBuffers();
 		vbos.add(vboID);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID);
@@ -200,14 +249,16 @@ public class Loader {
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
 	}
 
-	private IntBuffer storeDataInIntBuffer(int[] data) {
+	private IntBuffer storeDataInIntBuffer(int[] data)
+	{
 		IntBuffer buffer = BufferUtils.createIntBuffer(data.length);
 		buffer.put(data);
 		buffer.flip();
 		return buffer;
 	}
 
-	private FloatBuffer storeDataInFloatBuffer(float[] data) {
+	private FloatBuffer storeDataInFloatBuffer(float[] data)
+	{
 		FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
 		buffer.put(data);
 		buffer.flip();

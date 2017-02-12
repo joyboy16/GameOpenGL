@@ -17,16 +17,27 @@ import renderEngine.Loader;
 public class NormalMappedObjLoader {
 
 
-	public static RawModel loadOBJ(String objFileName, Loader loader) {
-		FileReader isr = null;
-		File objFile = new File("res/" + objFileName + ".obj");
-		try {
-			isr = new FileReader(objFile);
-		} catch (FileNotFoundException e) {
-			System.err.println("File" + objFileName + ".obj not found");
+	// all models are stored in res/
+	private static final String resFolderLocation = "res/";
+		
+	public static RawModel loadOBJ(String objName, Loader loader) {
+		// fileReader to read the obj-file
+		FileReader fr = null;
+		File objFile = new File(resFolderLocation + objName + ".obj");
+		
+		// try to init the reader
+		try
+		{
+			fr = new FileReader(objFile);
 		}
-		BufferedReader reader = new BufferedReader(isr);
-		String line;
+		catch (FileNotFoundException e)
+		{
+			System.err.println("Datei " + objName + ".obj konnte nicht gefunden werden in res/" + objName + ".");
+		}
+		String line = null;
+		
+		// bufferedReader for storing information
+		BufferedReader reader = new BufferedReader(fr);
 		List<VertexNormalMap> vertices = new ArrayList<VertexNormalMap>();
 		List<Vector2f> textures = new ArrayList<Vector2f>();
 		List<Vector3f> normals = new ArrayList<Vector3f>();

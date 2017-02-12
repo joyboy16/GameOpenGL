@@ -2,41 +2,57 @@ package entities;
 
 import org.lwjgl.util.vector.Vector3f;
 
-public class Light {
+public class Light
+{
+	// Initiate Variables
+	private Vector3f p;
+	private Vector3f c;
+	private Vector3f atten = new Vector3f(1, 0, 0);
 	
-	private Vector3f position;
-	private Vector3f colour;
-	private Vector3f attenuation = new Vector3f(1, 0, 0);
-	
-	public Light(Vector3f position, Vector3f colour) {
-		this.position = position;
-		this.colour = colour;
-	}
-	
-	public Light(Vector3f position, Vector3f colour, Vector3f attenuation) {
-		this.position = position;
-		this.colour = colour;
-		this.attenuation = attenuation;
+	// Constructor #1
+	public Light(Vector3f p, Vector3f c)
+	{
+		this.p = p;
+		this.c = c;
 	}
 	
-	public Vector3f getAttenuation(){
-		return attenuation;
+	// Constructor #2
+	public Light(Vector3f p, Vector3f c, Vector3f atten)
+	{
+		this.p = p;
+		this.c = c;
+		this.atten = atten;
+	}
+	
+	/********************************************************
+	 * 														*
+	 * 						GETTER-SETTER					*
+	 * 														*
+	 ********************************************************/
+	
+	public Vector3f getAttenuation()
+	{
+		return atten;
 	}
 
-	public Vector3f getPosition() {
-		return position;
+	public Vector3f getPosition()
+	{
+		return p;
 	}
 
-	public void setPosition(Vector3f position) {
-		this.position = position;
+	public void setPosition(Vector3f p)
+	{
+		this.p = p;
 	}
 
-	public Vector3f getColour() {
-		return colour;
+	public Vector3f getColour()
+	{
+		return c;
 	}
 
-	public void setColour(Vector3f colour) {
-		this.colour = colour;
+	public void setColour(Vector3f c)
+	{
+		this.c = c;
 	}
 	
 

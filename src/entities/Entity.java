@@ -1,116 +1,133 @@
 package entities;
 
 import models.TexturedModel;
-//import physics.PhysicsModel;
-
 import org.lwjgl.util.vector.Vector3f;
 
-public class Entity {
-
-	private TexturedModel model;
-	private Vector3f position;
-	private float rotX, rotY, rotZ;
-	private float scale;
+public class Entity
+{
+	// Initiate Variables
+	private TexturedModel texturedModel;
+	private Vector3f p;
+	private float rX, rY, rZ;
+	private float s;	
+	private int texIndex = 0;
 	
-	private int textureIndex = 0;
-	
-	public static final float GRAVITY = -50;
-
-	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
-			float scale) {
-		this.model = model;
-		this.position = position;
-		this.rotX = rotX;
-		this.rotY = rotY;
-		this.rotZ = rotZ;
-		this.scale = scale;
+	// Constructor #1
+	public Entity(TexturedModel texturedModel, Vector3f p, float rX, float rY, float rZ, float s)
+	{
+		this.texturedModel = texturedModel;
+		this.p = p;
+		this.rX = rX;
+		this.rY = rY;
+		this.rZ = rZ;
+		this.s = s;
 	}
 	
-	public Entity(TexturedModel model, int index, Vector3f position, float rotX, float rotY, float rotZ,
-			float scale) {
-		this.textureIndex = index;
-		this.model = model;
-		this.position = position;
-		this.rotX = rotX;
-		this.rotY = rotY;
-		this.rotZ = rotZ;
-		this.scale = scale;
+	// Constructor #2
+	public Entity(TexturedModel texturedModel, int i, Vector3f p, float rX, float rY, float rZ, float s)
+	{
+		this.texIndex = i;
+		this.texturedModel = texturedModel;
+		this.p = p;
+		this.rX = rX;
+		this.rY = rY;
+		this.rZ = rZ;
+		this.s = s;
 	}
 	
-	public float getTextureXOffset(){
-		int column = textureIndex%model.getTexture().getnumRows();
-		return (float)column/(float)model.getTexture().getnumRows();
+	public float getTextureXOffset()
+	{
+		return (float)texIndex%texturedModel.getTexture().getnumRows()/(float)texturedModel.getTexture().getnumRows();
 	}
 	
 	public float getTextureYOffset(){
-		int row = textureIndex/model.getTexture().getnumRows();
-		return (float)row/(float)model.getTexture().getnumRows();
+		return (float)texIndex/texturedModel.getTexture().getnumRows()/(float)texturedModel.getTexture().getnumRows();
 	}
 
-	public void increasePosition(float dx, float dy, float dz) {
-		this.position.x += dx;
-		this.position.y += dy;
-		this.position.z += dz;
+	public void increasePosition(float dx, float dy, float dz)
+	{
+		this.p.x += dx;
+		this.p.y += dy;
+		this.p.z += dz;
 	}
 
-	public void increaseRotation(float dx, float dy, float dz) {
-		this.rotX += dx;
-		this.rotX %= 360;
-		this.rotY += dy;
-		this.rotY %= 360;
-		this.rotZ += dz;
-		this.rotZ %= 360;
+	public void increaseRotation(float dx, float dy, float dz)
+	{
+		this.rX += dx;
+		this.rX %= 360;
+		this.rY += dy;
+		this.rY %= 360;
+		this.rZ += dz;
+		this.rZ %= 360;
+	}
+	
+	/********************************************************
+	 * 														*
+	 * 						GETTER-SETTER					*
+	 * 														*
+	 ********************************************************/
+
+	public TexturedModel getModel()
+	{
+		return texturedModel;
 	}
 
-	public TexturedModel getModel() {
-		return model;
+	public void setModel(TexturedModel model)
+	{
+		this.texturedModel = model;
 	}
 
-	public void setModel(TexturedModel model) {
-		this.model = model;
+	public Vector3f getPosition()
+	{
+		return p;
 	}
 
-	public Vector3f getPosition() {
-		return position;
+	public void setPosition(Vector3f position)
+	{
+		this.p = position;
 	}
 
-	public void setPosition(Vector3f position) {
-		this.position = position;
+	public float getRotX()
+	{
+		return rX;
 	}
 
-	public float getRotX() {
-		return rotX;
-	}
-
-	public void setRotX(float rotX) {
+	public void setRotX(float rotX)
+	{
 		while(rotX < 0) rotX += 360;
-		this.rotX = rotX%360;
+		this.rX = rotX%360;
 	}
 
-	public float getRotY() {
-		return rotY;
+	public float getRotY()
+	{
+		return rY;
 	}
 
-	public void setRotY(float rotY) {
+	public void setRotY(float rotY)
+	{
 		while(rotY < 0) rotY += 360;
-		this.rotY = rotY%360;
+		this.rY = rotY%360;
 	}
 
-	public float getRotZ() {
-		return rotZ;
+	public float getRotZ()
+	{
+		return rZ;
 	}
 
-	public void setRotZ(float rotZ) {
+	public void setRotZ(float rotZ)
+	{
 		while(rotZ < 0) rotZ += 360;
-		this.rotZ = rotZ%360;
+		this.rZ = rotZ%360;
 	}
 
-	public float getScale() {
-		return scale;
+	public float getScale()
+	{
+		return s;
 	}
 
-	public void setScale(float scale) {
-		this.scale = scale;
+	public void setScale(float scale)
+	{
+		this.s = scale;
 	}
 
 }

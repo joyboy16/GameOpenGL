@@ -5,57 +5,76 @@ import java.util.List;
 
 import org.lwjgl.util.vector.Vector3f;
 
-public class Vertex {
-	
+public class Vertex
+{
+	// static
 	private static final int NO_INDEX = -1;
 	
+	// variables
 	private Vector3f position;
-	private int textureIndex = NO_INDEX;
-	private int normalIndex = NO_INDEX;
-	private Vertex duplicateVertex = null;
-	private int index;
-	private float length;
+	private int textureIndex = -1;
+	private int normalIndex = -1;
+	private Vertex dupVertex;
 	private List<Vector3f> tangents = new ArrayList<Vector3f>();
-	private Vector3f averagedTangent = new Vector3f(0, 0, 0);
+	private Vector3f aTangent = new Vector3f(0, 0, 0);
+	private int i;
+	private float l;
 	
-	public Vertex(int index,Vector3f position){
-		this.index = index;
+	// Constructor
+	public Vertex(int index,Vector3f position)
+	{
+		this.i = index;
 		this.position = position;
-		this.length = position.length();
+		this.l = position.length();
+		dupVertex = null;
 	}
 	
-	public void addTangent(Vector3f tangent){
+	public void averageTangents()
+	{
+		// no average if isEmpty
+		if(tangents.isEmpty()) return;
+		// add all
+		for(Vector3f tangent : tangents) Vector3f.add(aTangent, tangent, aTangent);
+		// normalise
+		aTangent.normalise();
+	}
+	
+	/********************************************************
+	 * 														*
+	 * 						ONE-LINER						*
+	 * 														*
+	 ********************************************************/
+	
+	public void addTangent(Vector3f tangent)
+	{
 		tangents.add(tangent);
 	}
 	
-	public void averageTangents(){
-		if(tangents.isEmpty()){
-			return;
-		}
-		for(Vector3f tangent : tangents){
-			Vector3f.add(averagedTangent, tangent, averagedTangent);
-		}
-		averagedTangent.normalise();
+	public boolean hasSameTextureAndNormal(int tI,int nI)
+	{
+		return nI==normalIndex&&tI==textureIndex;
 	}
 	
+	public boolean isSet()
+	{
+		return textureIndex!=-1 && normalIndex!=-1;
+	}	
+	/********************************************************
+	 * 														*
+	 * 						GETTER-SETTER					*
+	 * 														*
+	 ********************************************************/
+	
 	public Vector3f getAverageTangent(){
-		return averagedTangent;
+		return aTangent;
 	}
 	
 	public int getIndex(){
-		return index;
+		return i;
 	}
 	
 	public float getLength(){
-		return length;
-	}
-	
-	public boolean isSet(){
-		return textureIndex!=NO_INDEX && normalIndex!=NO_INDEX;
-	}
-	
-	public boolean hasSameTextureAndNormal(int textureIndexOther,int normalIndexOther){
-		return textureIndexOther==textureIndex && normalIndexOther==normalIndex;
+		return l;
 	}
 	
 	public void setTextureIndex(int textureIndex){
@@ -79,11 +98,11 @@ public class Vertex {
 	}
 
 	public Vertex getDuplicateVertex() {
-		return duplicateVertex;
+		return dupVertex;
 	}
 
 	public void setDuplicateVertex(Vertex duplicateVertex) {
-		this.duplicateVertex = duplicateVertex;
+		this.dupVertex = duplicateVertex;
 	}
 
 }

@@ -77,13 +77,13 @@ public class Particle {
 	}
 
 	protected boolean updateParticle(Camera cam){
-		velocity.y += Entity.GRAVITY * gravity * DisplayManager.getFrameTimeSeconds();
+		velocity.y += -50 * gravity * DisplayManager.delta();
 		reuse.set(velocity);
-		reuse.scale(DisplayManager.getFrameTimeSeconds());
+		reuse.scale(DisplayManager.delta());
 		Vector3f.add(reuse, pos, pos);
 		updateTextureCoordinates();
 		dist = Vector3f.sub(cam.getPosition(), pos, null).lengthSquared();
-		timeElapsed += DisplayManager.getFrameTimeSeconds();
+		timeElapsed += DisplayManager.delta();
 		return timeElapsed < life;
 	}
 	

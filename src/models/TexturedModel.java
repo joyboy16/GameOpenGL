@@ -2,23 +2,32 @@ package models;
 
 import textures.TextureModel;
 
-public class TexturedModel {
+public class TexturedModel
+{
+	// declare variables
+	private RawModel rModel;
+	private TextureModel modTex;
+
+	// Constructor
+	public TexturedModel(RawModel model, TextureModel texture)
+	{
+		this.rModel = model;
+		this.modTex = texture;
+	}
+
+	/********************************************************
+	 * 														*
+	 * 						GETTER							*
+	 * 														*
+	 ********************************************************/
 	
-	private RawModel rawModel;
-	private TextureModel texture;
-
-	
-	public TexturedModel(RawModel model, TextureModel texture){
-		this.rawModel = model;
-		this.texture = texture;
+	public RawModel getRawModel()
+	{
+		return rModel;
 	}
 
-	public RawModel getRawModel() {
-		return rawModel;
+	public TextureModel getTexture()
+	{
+		return modTex;
 	}
-
-	public TextureModel getTexture() {
-		return texture;
-	}
-
 }

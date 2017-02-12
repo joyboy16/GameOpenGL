@@ -40,12 +40,12 @@ public class ParticleRenderer {
 		this.loader = loader;
 		this.vbo = loader.createEmptyVbo(INSTANCE_DATA_LENGTH * MAX_INSTANCES);
 		quad = loader.loadToVAO(VERTICES, 2);
-		loader.addInstancedAttribute(quad.getVaoID(), vbo, 1, 4, INSTANCE_DATA_LENGTH, 0);
-		loader.addInstancedAttribute(quad.getVaoID(), vbo, 2, 4, INSTANCE_DATA_LENGTH, 4);
-		loader.addInstancedAttribute(quad.getVaoID(), vbo, 3, 4, INSTANCE_DATA_LENGTH, 8);
-		loader.addInstancedAttribute(quad.getVaoID(), vbo, 4, 4, INSTANCE_DATA_LENGTH, 12);
-		loader.addInstancedAttribute(quad.getVaoID(), vbo, 5, 4, INSTANCE_DATA_LENGTH, 16);
-		loader.addInstancedAttribute(quad.getVaoID(), vbo, 6, 1, INSTANCE_DATA_LENGTH, 20);
+		loader.addInstAttr(quad.getVaoID(), vbo, 1, 4, INSTANCE_DATA_LENGTH, 0);
+		loader.addInstAttr(quad.getVaoID(), vbo, 2, 4, INSTANCE_DATA_LENGTH, 4);
+		loader.addInstAttr(quad.getVaoID(), vbo, 3, 4, INSTANCE_DATA_LENGTH, 8);
+		loader.addInstAttr(quad.getVaoID(), vbo, 4, 4, INSTANCE_DATA_LENGTH, 12);
+		loader.addInstAttr(quad.getVaoID(), vbo, 5, 4, INSTANCE_DATA_LENGTH, 16);
+		loader.addInstAttr(quad.getVaoID(), vbo, 6, 1, INSTANCE_DATA_LENGTH, 20);
 		shader = new ParticleShader();
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);

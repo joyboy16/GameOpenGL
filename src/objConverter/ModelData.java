@@ -1,46 +1,59 @@
 package objConverter;
 
-public class ModelData {
-
+public class ModelData
+{
+	// declare variables
 	private float[] vertices;
 	private float[] textureCoords;
 	private float[] normals;
 	private float[] tangents;
 	private int[] indices;
-	private float furthestPoint;
+	private float farestPoint;
 
-	public ModelData(float[] vertices, float[] textureCoords, float[] normals, float[] tangents, int[] indices,
-			float furthestPoint) {
+	public ModelData(float[] vertices, float[] textureCoords, float[] normals, float[] tangents, int[] indices,	float farestPoint)
+	{
 		this.vertices = vertices;
 		this.textureCoords = textureCoords;
 		this.normals = normals;
-		this.indices = indices;
-		this.furthestPoint = furthestPoint;
 		this.tangents = tangents;
+		this.indices = indices;
+		this.farestPoint = farestPoint;
 	}
+	
+	/********************************************************
+	 * 														*
+	 * 						GETTER-SETTER					*
+	 * 														*
+	 ********************************************************/
 
-	public float[] getVertices() {
+	public float[] getVertices()
+	{
 		return vertices;
 	}
 
-	public float[] getTextureCoords() {
+	public float[] getTextureCoords()
+	{
 		return textureCoords;
 	}
 	
-	public float[] getTangents(){
+	public float[] getTangents()
+	{
 		return tangents;
 	}
 
-	public float[] getNormals() {
+	public float[] getNormals()
+	{
 		return normals;
 	}
 
-	public int[] getIndices() {
+	public int[] getIndices()
+	{
 		return indices;
 	}
 
-	public float getFurthestPoint() {
-		return furthestPoint;
+	public float getFurthestPoint()
+	{
+		return farestPoint;
 	}
 
 }

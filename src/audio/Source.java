@@ -1,91 +1,134 @@
 package audio;
 
+//Make all the imports
 import org.lwjgl.util.vector.Vector3f;
-
 import org.lwjgl.openal.AL10;
 
+// Class of every source
 public class Source
 {
-	private int sourceId;
+	// declare all variables
+	private int numberOfSource;
 	
+	// constructor
 	public Source()
 	{
-		sourceId = AL10.alGenSources();
-		setVolume(1);
-		setPitch(1);
-		setPosition(new Vector3f(0,0,0));
+		// generate new source
+		numberOfSource = AL10.alGenSources();
+		
+		// set default volume, pitch and position
+		int defaultValue = 1;
+		setVolume(defaultValue);
+		setPitch(defaultValue);
+		Vector3f position = new Vector3f(0,0,0);
+		setPosition(position);
 	}
 	
-	public void play(int buffer)
+	// play the source
+	public void play(int audioBuffer)
 	{
+		// first stop a playing sound
 		stop();
-		AL10.alSourcei(sourceId, AL10.AL_BUFFER, buffer);
+		// fill the buffer
+		AL10.alSourcei(numberOfSource, AL10.AL_BUFFER, audioBuffer);
+		// play the sound
 		resume();
 	}
 	
+	// delete the source
 	public void delete()
 	{
+		// first stop a playing sound
 		stop();
-		AL10.alDeleteSources(sourceId);
+		// delete the source
+		AL10.alDeleteSources(numberOfSource);
 	}
 	
+	// pause the playing
 	public void pause()
 	{
-		AL10.alSourcePause(sourceId);
+		// pause the playing
+		AL10.alSourcePause(numberOfSource);
 	}
 	
+	// resume the playing
 	public void resume()
 	{
-		AL10.alSourcePlay(sourceId);
+		// resume the playing
+		AL10.alSourcePlay(numberOfSource);
 	}
 	
+	// stop the playing
 	public void stop()
 	{
-		AL10.alSourceStop(sourceId);
+		// stop the playing
+		AL10.alSourceStop(numberOfSource);
 	}
 	
-	public void setRolloff(float value)
+	// set the rollOff-factor for the distance model
+	public void setRolloff(float v)
 	{
-		AL10.alSourcef(sourceId, AL10.AL_ROLLOFF_FACTOR, value);
+		// set the rollOff-factor for the distance model
+		AL10.alSourcef(numberOfSource, AL10.AL_ROLLOFF_FACTOR, v);
 	}
 	
-	public void setReferenceDistance(float value)
+	// set the reference for the distance model
+	public void setReferenceDistance(float v)
 	{
-		AL10.alSourcef(sourceId, AL10.AL_REFERENCE_DISTANCE, value);
+		// set the reference for the distance model
+		AL10.alSourcef(numberOfSource, AL10.AL_REFERENCE_DISTANCE, v);
 	}
 	
-	public void setMaxDistance(float value)
+	// set the maximum distance for the distance model
+	public void setMaxDistance(float v)
 	{
-		AL10.alSourcef(sourceId, AL10.AL_MAX_DISTANCE, value);
+		// set the maximum distance for the distance model
+		AL10.alSourcef(numberOfSource, AL10.AL_MAX_DISTANCE, v);
 	}
 	
-	public void setVelocity(Vector3f vel)
+	// set the velocity for the sound
+	public void setVelocity(Vector3f v)
 	{
-		AL10.alSource3f(sourceId, AL10.AL_VELOCITY, vel.x, vel.y, vel.z);
+		// set the velocity for the sound
+		AL10.alSource3f(numberOfSource, AL10.AL_VELOCITY, v.x, v.y, v.z);
 	}
 	
-	public void setLoop(boolean loopean)
+	// set the loop for the sound
+	public void setLoop(boolean b)
 	{
-		AL10.alSourcef(sourceId, AL10.AL_LOOPING, loopean ? AL10.AL_TRUE : AL10.AL_FALSE);
+		// set the loop for the sound
+		if(b)
+		{
+			AL10.alSourcef(numberOfSource, AL10.AL_LOOPING, AL10.AL_TRUE);
+		}
+		else
+		{
+			AL10.alSourcef(numberOfSource, AL10.AL_LOOPING, AL10.AL_FALSE);			
+		}
 	}
 	
+	// check if the sound is playing
 	public boolean isPlaying()
-	{
-		return AL10.alGetSourcei(sourceId, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
+	{		
+		// check if the sound is playing
+		return AL10.alGetSourcei(numberOfSource, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
 	}
 	
-	public void setVolume(float value)
+	// set the volume of the sound
+	public void setVolume(float v)
 	{
-		AL10.alSourcef(sourceId, AL10.AL_GAIN, value);
+		AL10.alSourcef(numberOfSource, AL10.AL_GAIN, v);
 	}
 	
-	public void setPitch(float value)
+	// set the volume of the sound
+	public void setPitch(float v)
 	{
-		AL10.alSourcef(sourceId, AL10.AL_PITCH, value);
+		AL10.alSourcef(numberOfSource, AL10.AL_PITCH, v);
 	}
 	
-	public void setPosition(Vector3f position)
+	// set the volume of the sound
+	public void setPosition(Vector3f p)
 	{
-		AL10.alSource3f(sourceId, AL10.AL_POSITION, position.x, position.y, position.z);
+		AL10.alSource3f(numberOfSource, AL10.AL_POSITION, p.x, p.y, p.z);
 	}
 }

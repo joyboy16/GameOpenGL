@@ -1,23 +1,31 @@
 package models;
 
-public class RawModel {
+public class RawModel
+{
+	// declare variables
+	private int vaoNumber;
+	private int numberOfVertices;
 	
-	private int vaoID;
-	private int vertexCount;
-	
-	public RawModel(int vaoID, int vertexCount){
-		this.vaoID = vaoID;
-		this.vertexCount = vertexCount;
+	// Constructor
+	public RawModel(int vaoNumber, int numberOfVertices)
+	{
+		this.vaoNumber = vaoNumber;
+		this.numberOfVertices = numberOfVertices;
 	}
 
-	public int getVaoID() {
-		return vaoID;
+	/********************************************************
+	 * 														*
+	 * 						GETTER-SETTER					*
+	 * 														*
+	 ********************************************************/
+	
+	public int getVaoID()
+	{
+		return vaoNumber;
 	}
 
-	public int getVertexCount() {
-		return vertexCount;
+	public int getVertexCount()
+	{
+		return numberOfVertices;
 	}
-	
-	
-
 }
