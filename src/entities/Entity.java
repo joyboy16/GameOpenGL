@@ -38,13 +38,13 @@ public class Entity {
 	}
 	
 	public float getTextureXOffset(){
-		int column = textureIndex%model.getTexture().getNumberOfRows();
-		return (float)column/(float)model.getTexture().getNumberOfRows();
+		int column = textureIndex%model.getTexture().getnumRows();
+		return (float)column/(float)model.getTexture().getnumRows();
 	}
 	
 	public float getTextureYOffset(){
-		int row = textureIndex/model.getTexture().getNumberOfRows();
-		return (float)row/(float)model.getTexture().getNumberOfRows();
+		int row = textureIndex/model.getTexture().getnumRows();
+		return (float)row/(float)model.getTexture().getnumRows();
 	}
 
 	public void increasePosition(float dx, float dy, float dz) {

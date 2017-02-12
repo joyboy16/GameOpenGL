@@ -9,50 +9,50 @@ import renderEngine.DisplayManager;
 
 public class Particle {
 
-	private Vector3f position;
+	private Vector3f pos;
 	private Vector3f velocity;
-	private float gravityEffect;
-	private float lifeLength;
-	private float rotation;
+	private float gravity;
+	private float life;
+	private float rot;
 	private float scale;
 	
-	private ParticleTexture texture;
+	private ParticleTexture particletexture;
 	
-	private Vector2f texOffset1 = new Vector2f();
-	private Vector2f texOffset2 = new Vector2f();
-	private float blend; 
+	private Vector2f textureOffset1 = new Vector2f();
+	private Vector2f textureOffset2 = new Vector2f();
+	private float blendFactor; 
 	
-	private float elapsedTime = 0;
-	private float distance;
+	private float timeElapsed = 0;
+	private float dist;
 	
-	private Vector3f reusableChange = new Vector3f();
+	private Vector3f reuse = new Vector3f();
 	
 	private boolean alive = false;
 
-	public Particle(ParticleTexture texture, Vector3f position, Vector3f velocity, float gravityEffect, float lifeLength, float rotation,
+	public Particle(ParticleTexture particletexture, Vector3f pos, Vector3f velocity, float gravity, float life, float rot,
 			float scale) {
 		alive = true;
-		this.texture = texture;
-		this.position = position;
+		this.particletexture = particletexture;
+		this.pos = pos;
 		this.velocity = velocity;
-		this.gravityEffect = gravityEffect;
-		this.lifeLength = lifeLength;
-		this.rotation = rotation;
+		this.gravity = gravity;
+		this.life = life;
+		this.rot = rot;
 		this.scale = scale;
 		ParticleMaster.addParticles(this);
 	}
 
 	
 	public float getDistance() {
-		return distance;
+		return dist;
 	}
 
 	public Vector3f getPosition() {
-		return position;
+		return pos;
 	}
 
 	public float getRotation() {
-		return rotation;
+		return rot;
 	}
 
 	public float getScale() {
@@ -60,49 +60,49 @@ public class Particle {
 	}
 	
 	public ParticleTexture getTexture() {
-		return texture;
+		return particletexture;
 	}
 	
 	
 	public Vector2f getTexOffset1() {
-		return texOffset1;
+		return textureOffset1;
 	}
 
 	public Vector2f getTexOffset2() {
-		return texOffset2;
+		return textureOffset2;
 	}
 
 	public float getBlend() {
-		return blend;
+		return blendFactor;
 	}
 
-	protected boolean update(Camera camera){
-		velocity.y += Entity.GRAVITY * gravityEffect * DisplayManager.getFrameTimeSeconds();
-		reusableChange.set(velocity);
-		reusableChange.scale(DisplayManager.getFrameTimeSeconds());
-		Vector3f.add(reusableChange, position, position);
-		updateTextureCoordInfo();
-		distance = Vector3f.sub(camera.getPosition(), position, null).lengthSquared();
-		elapsedTime += DisplayManager.getFrameTimeSeconds();
-		return elapsedTime < lifeLength;
+	protected boolean updateParticle(Camera cam){
+		velocity.y += Entity.GRAVITY * gravity * DisplayManager.getFrameTimeSeconds();
+		reuse.set(velocity);
+		reuse.scale(DisplayManager.getFrameTimeSeconds());
+		Vector3f.add(reuse, pos, pos);
+		updateTextureCoordinates();
+		dist = Vector3f.sub(cam.getPosition(), pos, null).lengthSquared();
+		timeElapsed += DisplayManager.getFrameTimeSeconds();
+		return timeElapsed < life;
 	}
 	
-	private void updateTextureCoordInfo(){
-		float lifeFactor = elapsedTime / lifeLength;
-		int stageCount = texture.getNumberOfRows() * texture.getNumberOfRows();
-		float atlasProgression = lifeFactor * stageCount;
-		int index1 = (int)Math.floor(atlasProgression);
-		int index2 = index1 < stageCount -1 ? index1 +1 : index1;
-		this.blend = atlasProgression % 1; 
-		setTextureOffset(texOffset1,index1);
-		setTextureOffset(texOffset2,index2);
+	private void updateTextureCoordinates(){
+		float life_factor = timeElapsed / life;
+		int stage = particletexture.getNumberOfRows() * particletexture.getNumberOfRows();
+		float atlas_progress = life_factor * stage;
+		int idx1 = (int)Math.floor(atlas_progress);
+		int idx2 = idx1 < stage -1 ? idx1 +1 : idx1;
+		this.blendFactor = atlas_progress % 1; 
+		setTextureOffset(textureOffset1,idx1);
+		setTextureOffset(textureOffset2,idx2);
 		
 	}
 	
-	private void setTextureOffset(Vector2f offset, int index){
-		int column = index % texture.getNumberOfRows();
-		int row = index / texture.getNumberOfRows();
-		offset.x = (float) column / texture.getNumberOfRows();
-		offset.y = (float) row / texture.getNumberOfRows();
+	private void setTextureOffset(Vector2f offset, int idx){
+		int col = idx % particletexture.getNumberOfRows();
+		int row = idx / particletexture.getNumberOfRows();
+		offset.x = (float) col / particletexture.getNumberOfRows();
+		offset.y = (float) row / particletexture.getNumberOfRows();
 	}
 }

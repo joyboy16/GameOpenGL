@@ -9,33 +9,33 @@ import renderEngine.Loader;
 
 public class PostProcessing {
 	
-	private static final float[] POSITIONS = { -1, 1, -1, -1, 1, 1, 1, -1 };	
+	private static final float[] POS = { -1, 1, -1, -1, 1, 1, 1, -1 };	
 	private static RawModel quad;
-	private static ContrastChanger contrastChanger;
+	private static ContrastChanger changer;
 	
 	
 	public static void init(Loader loader){
-		quad = loader.loadToVAO(POSITIONS, 2);
-		contrastChanger = new ContrastChanger();
+		quad = loader.loadToVAO(POS, 2);
+		changer = new ContrastChanger();
 	}
 	
-	public static void doPostProcessing(int colourTexture){
-		start();
-		contrastChanger.render(colourTexture);
-		end();
+	public static void runPostProcessing(int colourTex){
+		startProcess();
+		changer.render(colourTex);
+		endProcess();
 	}
 	
-	public static void cleanUp(){
-		contrastChanger.cleanUp();
+	public static void clean(){
+		changer.clean();
 	}
 	
-	private static void start(){
+	private static void startProcess(){
 		GL30.glBindVertexArray(quad.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 	
-	private static void end(){
+	private static void endProcess(){
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);

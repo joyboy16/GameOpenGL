@@ -15,51 +15,51 @@ import renderEngine.Loader;
 
 public class ParticleMaster {
 
-	private static Map<ParticleTexture, List<Particle>> particles = new HashMap<ParticleTexture, List<Particle>>();
-	private static ParticleRenderer renderer;
+	private static Map<ParticleTexture, List<Particle>> particle_list = new HashMap<ParticleTexture, List<Particle>>();
+	private static ParticleRenderer particleRenderer;
 	
-	public static void init(Loader loader, Matrix4f projectionMatrix){
-		renderer = new ParticleRenderer(loader, projectionMatrix);
+	public static void init(Loader loader, Matrix4f projection){
+		particleRenderer = new ParticleRenderer(loader, projection);
 	}
 	
-	public static void update(Camera camera){
-		Iterator<Entry<ParticleTexture,List<Particle>>> mapIterator = particles.entrySet().iterator();
-		while (mapIterator.hasNext()) {
-			Entry<ParticleTexture, List<Particle>> entry = mapIterator.next();
-			List<Particle> list = entry.getValue();
-			Iterator<Particle> iterator = list.iterator();
+	public static void update(Camera cam){
+		Iterator<Entry<ParticleTexture,List<Particle>>> itr = particle_list.entrySet().iterator();
+		while (itr.hasNext()) {
+			Entry<ParticleTexture, List<Particle>> particle = itr.next();
+			List<Particle> listP = particle.getValue();
+			Iterator<Particle> iterator = listP.iterator();
 			while (iterator.hasNext()) {
 				Particle p = iterator.next();
-				boolean stillAlive = p.update(camera);
-				if(!stillAlive){
+				boolean notDead = p.updateParticle(cam);
+				if(!notDead){
 					iterator.remove();
-					if(list.isEmpty()){
-						mapIterator.remove();
+					if(listP.isEmpty()){
+						itr.remove();
 					}
 				}
 					
 			}
-			if (!entry.getKey().useAdditiveBlending()) {
-				InsertionSort.sortHighToLow(list);
+			if (!particle.getKey().useAdditiveBlending()) {
+				InsertionSort.sortHighToLow(listP);
 			}
 		}
 		
 	}
 	
-	public static void renderParticles(Camera camera){
-		renderer.render(particles, camera);
+	public static void renderParticles(Camera cam){
+		particleRenderer.render(particle_list, cam);
 	}
 	
-	public static void cleanUp(){
-		renderer.cleanUp();
+	public static void clean(){
+		particleRenderer.cleanUp();
 	}
 	
-	public static void addParticles(Particle particle){
-		List<Particle> list = particles.get(particle.getTexture());
+	public static void addParticles(Particle p){
+		List<Particle> list = particle_list.get(p.getTexture());
 		if (list == null) {
 			list = new ArrayList<Particle>();
-			particles.put(particle.getTexture(), list);
+			particle_list.put(p.getTexture(), list);
 		}
-		list.add(particle);
+		list.add(p);
 	}
 }

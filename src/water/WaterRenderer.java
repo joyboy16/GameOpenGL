@@ -13,7 +13,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
-import toolbox.Maths;
+import tools.Maths;
 import entities.Camera;
 import entities.Light;
 
@@ -47,7 +47,7 @@ public class WaterRenderer {
 	public void render(List<WaterTile> water, Camera camera, Light sun) {
 		prepareRender(camera, sun);	
 		for (WaterTile tile : water) {
-			Matrix4f modelMatrix = Maths.createTransformationMatrix(
+			Matrix4f modelMatrix = Maths.generateTransformationMatrix(
 					new Vector3f(tile.getX(), tile.getHeight(), tile.getZ()), 0, 0, 0,
 					WaterTile.TILE_SIZE);
 			shader.loadModelMatrix(modelMatrix);

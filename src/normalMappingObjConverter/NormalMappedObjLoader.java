@@ -16,19 +16,18 @@ import renderEngine.Loader;
 
 public class NormalMappedObjLoader {
 
-	private static final String RES_LOC = "res/";
 
 	public static RawModel loadOBJ(String objFileName, Loader loader) {
 		FileReader isr = null;
-		File objFile = new File(RES_LOC + objFileName + ".obj");
+		File objFile = new File("res/" + objFileName + ".obj");
 		try {
 			isr = new FileReader(objFile);
 		} catch (FileNotFoundException e) {
-			System.err.println("File" + objFileName + ".obj not found in res; don't use any extention");
+			System.err.println("File" + objFileName + ".obj not found");
 		}
 		BufferedReader reader = new BufferedReader(isr);
 		String line;
-		List<VertexNM> vertices = new ArrayList<VertexNM>();
+		List<VertexNormalMap> vertices = new ArrayList<VertexNormalMap>();
 		List<Vector2f> textures = new ArrayList<Vector2f>();
 		List<Vector3f> normals = new ArrayList<Vector3f>();
 		List<Integer> indices = new ArrayList<Integer>();
@@ -40,7 +39,7 @@ public class NormalMappedObjLoader {
 					Vector3f vertex = new Vector3f((float) Float.valueOf(currentLine[1]),
 							(float) Float.valueOf(currentLine[2]),
 							(float) Float.valueOf(currentLine[3]));
-					VertexNM newVertex = new VertexNM(vertices.size(), vertex);
+					VertexNormalMap newVertex = new VertexNormalMap(vertices.size(), vertex);
 					vertices.add(newVertex);
 
 				} else if (line.startsWith("vt ")) {
@@ -63,9 +62,9 @@ public class NormalMappedObjLoader {
 				String[] vertex1 = currentLine[1].split("/");
 				String[] vertex2 = currentLine[2].split("/");
 				String[] vertex3 = currentLine[3].split("/");
-				VertexNM v0 = processVertex(vertex1, vertices, indices);
-				VertexNM v1 = processVertex(vertex2, vertices, indices);
-				VertexNM v2 = processVertex(vertex3, vertices, indices);
+				VertexNormalMap v0 = processVertex(vertex1, vertices, indices);
+				VertexNormalMap v1 = processVertex(vertex2, vertices, indices);
+				VertexNormalMap v2 = processVertex(vertex3, vertices, indices);
 				calculateTangents(v0, v1, v2, textures);
 				line = reader.readLine();
 			}
@@ -85,7 +84,7 @@ public class NormalMappedObjLoader {
 		return loader.loadToVAO(verticesArray, texturesArray, normalsArray, tangentsArray, indicesArray);
 	}
 
-	private static void calculateTangents(VertexNM v0, VertexNM v1, VertexNM v2,
+	private static void calculateTangents(VertexNormalMap v0, VertexNormalMap v1, VertexNormalMap v2,
 			List<Vector2f> textures) {
 		Vector3f delatPos1 = Vector3f.sub(v1.getPosition(), v0.getPosition(), null);
 		Vector3f delatPos2 = Vector3f.sub(v2.getPosition(), v0.getPosition(), null);
@@ -105,10 +104,10 @@ public class NormalMappedObjLoader {
 		v2.addTangent(tangent);
 	}
 
-	private static VertexNM processVertex(String[] vertex, List<VertexNM> vertices,
+	private static VertexNormalMap processVertex(String[] vertex, List<VertexNormalMap> vertices,
 			List<Integer> indices) {
 		int index = Integer.parseInt(vertex[0]) - 1;
-		VertexNM currentVertex = vertices.get(index);
+		VertexNormalMap currentVertex = vertices.get(index);
 		int textureIndex = Integer.parseInt(vertex[1]) - 1;
 		int normalIndex = Integer.parseInt(vertex[2]) - 1;
 		if (!currentVertex.isSet()) {
@@ -117,7 +116,7 @@ public class NormalMappedObjLoader {
 			indices.add(index);
 			return currentVertex;
 		} else {
-			return dealWithAlreadyProcessedVertex(currentVertex, textureIndex, normalIndex, indices,
+			return executeProcessedVertex(currentVertex, textureIndex, normalIndex, indices,
 					vertices);
 		}
 	}
@@ -130,12 +129,12 @@ public class NormalMappedObjLoader {
 		return indicesArray;
 	}
 
-	private static float convertDataToArrays(List<VertexNM> vertices, List<Vector2f> textures,
+	private static float convertDataToArrays(List<VertexNormalMap> vertices, List<Vector2f> textures,
 			List<Vector3f> normals, float[] verticesArray, float[] texturesArray,
 			float[] normalsArray, float[] tangentsArray) {
 		float furthestPoint = 0;
 		for (int i = 0; i < vertices.size(); i++) {
-			VertexNM currentVertex = vertices.get(i);
+			VertexNormalMap currentVertex = vertices.get(i);
 			if (currentVertex.getLength() > furthestPoint) {
 				furthestPoint = currentVertex.getLength();
 			}
@@ -159,18 +158,18 @@ public class NormalMappedObjLoader {
 		return furthestPoint;
 	}
 
-	private static VertexNM dealWithAlreadyProcessedVertex(VertexNM previousVertex, int newTextureIndex,
-			int newNormalIndex, List<Integer> indices, List<VertexNM> vertices) {
+	private static VertexNormalMap executeProcessedVertex(VertexNormalMap previousVertex, int newTextureIndex,
+			int newNormalIndex, List<Integer> indices, List<VertexNormalMap> vertices) {
 		if (previousVertex.hasSameTextureAndNormal(newTextureIndex, newNormalIndex)) {
 			indices.add(previousVertex.getIndex());
 			return previousVertex;
 		} else {
-			VertexNM anotherVertex = previousVertex.getDuplicateVertex();
+			VertexNormalMap anotherVertex = previousVertex.getDuplicateVertex();
 			if (anotherVertex != null) {
-				return dealWithAlreadyProcessedVertex(anotherVertex, newTextureIndex,
+				return executeProcessedVertex(anotherVertex, newTextureIndex,
 						newNormalIndex, indices, vertices);
 			} else {
-				VertexNM duplicateVertex = new VertexNM(vertices.size(), previousVertex.getPosition());
+				VertexNormalMap duplicateVertex = new VertexNormalMap(vertices.size(), previousVertex.getPosition());
 				duplicateVertex.setTextureIndex(newTextureIndex);
 				duplicateVertex.setNormalIndex(newNormalIndex);
 				previousVertex.setDuplicateVertex(duplicateVertex);
@@ -182,8 +181,8 @@ public class NormalMappedObjLoader {
 		}
 	}
 
-	private static void removeUnusedVertices(List<VertexNM> vertices) {
-		for (VertexNM vertex : vertices) {
+	private static void removeUnusedVertices(List<VertexNormalMap> vertices) {
+		for (VertexNormalMap vertex : vertices) {
 			vertex.averageTangents();
 			if (!vertex.isSet()) {
 				vertex.setTextureIndex(0);

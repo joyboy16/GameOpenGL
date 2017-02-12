@@ -13,9 +13,9 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import renderEngine.Loader;
-import textures.TerrainTexture;
-import textures.TerrainTexturePack;
-import toolbox.Maths;
+import textures.TextureTerrain;
+import textures.TerrainTextureBundle;
+import tools.Maths;
 
 public class Terrain {
 
@@ -28,15 +28,15 @@ public class Terrain {
 	private float x;
 	private float z;
 	private RawModel model;
-	private TerrainTexturePack texturePack;
-	private TerrainTexture blendMap;
+	private TerrainTextureBundle texturePack;
+	private TextureTerrain blendMap;
 	
 	private HeightsGenerator generator;
 	
 	private float[][] heights;
 
-	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack,
-			TerrainTexture blendMap, String heightMap) {
+	public Terrain(int gridX, int gridZ, Loader loader, TerrainTextureBundle texturePack,
+			TextureTerrain blendMap, String heightMap) {
 		this.texturePack = texturePack;
 		this.blendMap = blendMap;
 		this.x = gridX * SIZE;
@@ -57,11 +57,11 @@ public class Terrain {
 		return model;
 	}
 
-	public TerrainTexturePack getTexturePack() {
+	public TerrainTextureBundle getTexturePack() {
 		return texturePack;
 	}
 
-	public TerrainTexture getBlendMap() {
+	public TextureTerrain getBlendMap() {
 		return blendMap;
 	}
 	
@@ -81,11 +81,11 @@ public class Terrain {
         float answer;
          
         if (xCoord <= (1-zCoord)) {
-            answer = Maths.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1,
+            answer = Maths.barryCenter(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1,
                             heights[gridX + 1][gridZ], 0), new Vector3f(0,
                             heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, zCoord));
         } else {
-            answer = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1,
+            answer = Maths.barryCenter(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1,
                             heights[gridX + 1][gridZ + 1], 1), new Vector3f(0,
                             heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, zCoord));
         }

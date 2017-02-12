@@ -6,17 +6,17 @@ import shaders.ShaderProgram;
 
 public class GuiShader extends ShaderProgram{
 	
-	private static final String VERTEX_FILE = "/guis/guiVertexShader.txt";
-	private static final String FRAGMENT_FILE = "/guis/guiFragmentShader.txt";
+	private static final String VS = "/guis/guiVertexShader.txt";
+	private static final String FS = "/guis/guiFragmentShader.txt";
 	
 	private int location_transformationMatrix;
 
 	public GuiShader() {
-		super(VERTEX_FILE, FRAGMENT_FILE);
+		super(VS, FS);
 	}
 	
-	public void loadTransformation(Matrix4f matrix){
-		super.loadMatrix(location_transformationMatrix, matrix);
+	public void loadTransformation(Matrix4f mat){
+		super.loadMatrix(location_transformationMatrix, mat);
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class GuiShader extends ShaderProgram{
 
 	@Override
 	protected void bindAttributes() {
-		super.bindAttribute(0, "position");
+		super.bindAttribute(0, "pos");
 	}
 	
 	

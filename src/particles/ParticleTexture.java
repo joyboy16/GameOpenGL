@@ -2,22 +2,22 @@ package particles;
 
 public class ParticleTexture {
 
-	private int textureID;
-	private int numberOfRows;
+	private int iD;
+	private int numRows;
 	private boolean additive;
 	
-	public ParticleTexture(int textureID, int numberOfRows, boolean additive) {
-		this.textureID = textureID;
-		this.numberOfRows = numberOfRows;
+	public ParticleTexture(int iD, int numRows, boolean additive) {
+		this.iD = iD;
+		this.numRows = numRows;
 		this.additive = additive;
 	}
 
 	public int getTextureID() {
-		return textureID;
+		return iD;
 	}
 
 	public int getNumberOfRows() {
-		return numberOfRows;
+		return numRows;
 	}
 	
 	protected boolean useAdditiveBlending() {

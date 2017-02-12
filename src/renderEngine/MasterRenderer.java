@@ -92,9 +92,9 @@ public class MasterRenderer {
 		terrainShader.loadSkyColour(RED, GREEN, BLUE);
 		terrainShader.loadLights(lights);
 		terrainShader.loadViewMatrix(camera);
-		terrainRenderer.render(terrains,shadowMapRenderer.getToShadowMapSpaceMatrix());
+		terrainRenderer.render(terrains,shadowMapRenderer.getShadowMapSpaceMatrix());
 		terrainShader.stop();
-		skyboxRenderer.render(camera, RED, GREEN, BLUE);
+		skyboxRenderer.renderSky(camera);
 		terrains.clear();
 		entities.clear();
 		normalMapEntities.clear();
@@ -141,7 +141,7 @@ public class MasterRenderer {
 		for (Entity entity : entityList) {
 			processEntity(entity);
 		}
-		shadowMapRenderer.render(entities, sun);
+		shadowMapRenderer.renderShadow(entities, sun);
 		entities.clear();
 	}
 	
@@ -153,7 +153,7 @@ public class MasterRenderer {
 		shader.cleanUp();
 		terrainShader.cleanUp();
 		normalMapRenderer.cleanUp();
-		shadowMapRenderer.cleanUp();
+		shadowMapRenderer.clean();
 	}
 
 	public void prepare() {

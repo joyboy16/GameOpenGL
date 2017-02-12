@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL33;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
-import textures.TextureData;
+import textures.DataTexture;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 
@@ -137,7 +137,7 @@ public class Loader {
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texID);
 
 		for (int i = 0; i < textureFiles.length; i++) {
-			TextureData data = decodeTextureFile("res/" + textureFiles[i] + ".png");
+			DataTexture data = decodeTextureFile("res/" + textureFiles[i] + ".png");
 			GL11.glTexImage2D(GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL11.GL_RGBA, data.getWidth(), data.getHeight(), 0,
 					GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data.getBuffer());
 		}
@@ -150,7 +150,7 @@ public class Loader {
 		return texID;
 	}
 
-	private TextureData decodeTextureFile(String fileName) {
+	private DataTexture decodeTextureFile(String fileName) {
 		int width = 0;
 		int height = 0;
 		ByteBuffer buffer = null;
@@ -168,7 +168,7 @@ public class Loader {
 			System.err.println("Tried to load texture " + fileName + ", didn't work");
 			System.exit(-1);
 		}
-		return new TextureData(buffer, width, height);
+		return new DataTexture(buffer, width, height);
 	}
 
 	private int createVAO() {

@@ -2,14 +2,14 @@ package textures;
 
 import java.nio.ByteBuffer;
 
-public class TextureData {
+public class DataTexture {
 	
 	private int width;
 	private int height;
-	private ByteBuffer buffer;
+	private ByteBuffer buff;
 	
-	public TextureData(ByteBuffer buffer, int width, int height){
-		this.buffer = buffer;
+	public DataTexture(ByteBuffer buff, int width, int height){
+		this.buff = buff;
 		this.width = width;
 		this.height = height;
 	}
@@ -23,7 +23,7 @@ public class TextureData {
 	}
 	
 	public ByteBuffer getBuffer(){
-		return buffer;
+		return buff;
 	}
 
 }

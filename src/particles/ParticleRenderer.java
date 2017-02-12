@@ -18,7 +18,7 @@ import org.lwjgl.util.vector.Vector3f;
 import entities.Camera;
 import models.RawModel;
 import renderEngine.Loader;
-import toolbox.Maths;
+import tools.Maths;
 
 public class ParticleRenderer {
 	
@@ -53,7 +53,7 @@ public class ParticleRenderer {
 	}
 	
 	protected void render(Map<ParticleTexture, List<Particle>> particles, Camera camera){
-		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
+		Matrix4f viewMatrix = Maths.generateViewMatrix(camera);
 		prepare();
 		for (ParticleTexture texture : particles.keySet()) {
 			//bind texture 
@@ -149,7 +149,6 @@ public class ParticleRenderer {
 		GL20.glEnableVertexAttribArray(5);
 		GL20.glEnableVertexAttribArray(6);
 		GL11.glEnable(GL11.GL_BLEND);
-		//GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDepthMask(false);
 	}
 	

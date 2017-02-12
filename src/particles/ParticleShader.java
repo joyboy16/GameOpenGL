@@ -7,21 +7,21 @@ import shaders.ShaderProgram;
 
 public class ParticleShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "/particles/particleVShader.txt";
-	private static final String FRAGMENT_FILE = "/particles/particleFShader.txt";
+	private static final String VS = "/particles/particleVertexShader.txt";
+	private static final String FS = "/particles/particleFragmentShader.txt";
 
-	private int location_numberOfRows;
-	private int location_projectionMatrix;
+	private int locationNumRows;
+	private int locationProjection;
 	
 
 	public ParticleShader() {
-		super(VERTEX_FILE, FRAGMENT_FILE);
+		super(VS, FS);
 	}
 
 	@Override
 	protected void getAllUniformLocations() {
-		location_numberOfRows = super.getUniformLocation("numberOfRows");
-		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
+		locationNumRows = super.getUniformLocation("numberOfRows");
+		locationProjection = super.getUniformLocation("projectionMatrix");
 		
 	}
 
@@ -34,12 +34,12 @@ public class ParticleShader extends ShaderProgram {
 	}
 
 	protected void loadNumberOfRows(float numRows){
-		super.loadFloat(location_numberOfRows, numRows);
+		super.loadFloat(locationNumRows, numRows);
 	}
 	
 
-	protected void loadProjectionMatrix(Matrix4f projectionMatrix) {
-		super.loadMatrix(location_projectionMatrix, projectionMatrix);
+	protected void loadProjectionMatrix(Matrix4f projection) {
+		super.loadMatrix(locationProjection, projection);
 	}
 
 }

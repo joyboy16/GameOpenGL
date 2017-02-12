@@ -10,93 +10,78 @@ import renderEngine.DisplayManager;
  
 public class ParticleSystem {
  
-    private float pps, averageSpeed, gravityComplient, averageLifeLength, averageScale;
+    private float pps, avgSpeed, gravity, avgLife, avgScale;
  
-    private float speedError, lifeError, scaleError = 0;
+    private float speedEr, lifeEr, scaleEr = 0;
     private boolean randomRotation = false;
-    private Vector3f direction;
-    private float directionDeviation = 0;
+    private Vector3f dir;
+    private float dirDeviation = 0;
  
-    private ParticleTexture texture;
+    private ParticleTexture particleTexture;
     
     private Random random = new Random();
  
-    public ParticleSystem(ParticleTexture texture, float pps, float speed, float gravityComplient, float lifeLength, float scale) {
-        this.texture = texture;
+    public ParticleSystem(ParticleTexture particleTexture, float pps, float speed, float gravity, float avgLife, float scale) {
+        this.particleTexture = particleTexture;
     	this.pps = pps;
-        this.averageSpeed = speed;
-        this.gravityComplient = gravityComplient;
-        this.averageLifeLength = lifeLength;
-        this.averageScale = scale;
+        this.avgSpeed = speed;
+        this.gravity = gravity;
+        this.avgLife = avgLife;
+        this.avgScale = scale;
     }
  
-    /**
-     * @param direction - The average direction in which particles are emitted.
-     * @param deviation - A value between 0 and 1 indicating how far from the chosen direction particles can deviate.
-     */
-    public void setDirection(Vector3f direction, float deviation) {
-        this.direction = new Vector3f(direction);
-        this.directionDeviation = (float) (deviation * Math.PI);
+    public void setDirection(Vector3f dir, float dev) {
+        this.dir = new Vector3f(dir);
+        this.dirDeviation = (float) (dev * Math.PI);
     }
  
     public void randomizeRotation() {
         randomRotation = true;
     }
  
-    /**
-     * @param error
-     *            - A number between 0 and 1, where 0 means no error margin.
-     */
     public void setSpeedError(float error) {
-        this.speedError = error * averageSpeed;
+        this.speedEr = error * avgSpeed;
     }
  
-    /**
-     * @param error
-     *            - A number between 0 and 1, where 0 means no error margin.
-     */
     public void setLifeError(float error) {
-        this.lifeError = error * averageLifeLength;
+        this.lifeEr = error * avgLife;
     }
  
-    /**
-     * @param error
-     *            - A number between 0 and 1, where 0 means no error margin.
-     */
+     
     public void setScaleError(float error) {
-        this.scaleError = error * averageScale;
+        this.scaleEr = error * avgScale;
     }
  
-    public void generateParticles(Vector3f systemCenter) {
+    public void generateParticles(Vector3f center) {
         float delta = DisplayManager.getFrameTimeSeconds();
         float particlesToCreate = pps * delta;
         int count = (int) Math.floor(particlesToCreate);
         float partialParticle = particlesToCreate % 1;
         for (int i = 0; i < count; i++) {
-            emitParticle(systemCenter);
+            emitParticle(center);
         }
         if (Math.random() < partialParticle) {
-            emitParticle(systemCenter);
+            emitParticle(center);
         }
     }
  
     private void emitParticle(Vector3f center) {
         Vector3f velocity = null;
-        if(direction!=null){
-            velocity = generateRandomUnitVectorWithinCone(direction, directionDeviation);
+        if(dir!=null){
+            velocity = generateRandomUnitVectorWithinCone(dir, dirDeviation);
         }else{
             velocity = generateRandomUnitVector();
         }
         velocity.normalise();
-        velocity.scale(generateValue(averageSpeed, speedError));
-        float scale = generateValue(averageScale, scaleError);
-        float lifeLength = generateValue(averageLifeLength, lifeError);
-        new Particle(texture, new Vector3f(center), velocity, gravityComplient, lifeLength, generateRotation(), scale);
+        velocity.scale(generateValue(avgSpeed, speedEr));
+        float scale = generateValue(avgScale, scaleEr);
+        float lifeLength = generateValue(avgLife, lifeEr);
+        new Particle(particleTexture, new Vector3f(center), velocity, gravity, lifeLength, generateRotation(), scale);
     }
  
-    private float generateValue(float average, float errorMargin) {
+    private float generateValue(float avg, float errorMargin) {
         float offset = (random.nextFloat() - 0.5f) * 2f * errorMargin;
-        return average + offset;
+        return avg + offset;
     }
  
     private float generateRotation() {
@@ -107,7 +92,7 @@ public class ParticleSystem {
         }
     }
  
-    private static Vector3f generateRandomUnitVectorWithinCone(Vector3f coneDirection, float angle) {
+    private static Vector3f generateRandomUnitVectorWithinCone(Vector3f coneDir, float angle) {
         float cosAngle = (float) Math.cos(angle);
         Random random = new Random();
         float theta = (float) (random.nextFloat() * 2f * Math.PI);
@@ -116,18 +101,18 @@ public class ParticleSystem {
         float x = (float) (rootOneMinusZSquared * Math.cos(theta));
         float y = (float) (rootOneMinusZSquared * Math.sin(theta));
  
-        Vector4f direction = new Vector4f(x, y, z, 1);
-        if (coneDirection.x != 0 || coneDirection.y != 0 || (coneDirection.z != 1 && coneDirection.z != -1)) {
-            Vector3f rotateAxis = Vector3f.cross(coneDirection, new Vector3f(0, 0, 1), null);
+        Vector4f dir = new Vector4f(x, y, z, 1);
+        if (coneDir.x != 0 || coneDir.y != 0 || (coneDir.z != 1 && coneDir.z != -1)) {
+            Vector3f rotateAxis = Vector3f.cross(coneDir, new Vector3f(0, 0, 1), null);
             rotateAxis.normalise();
-            float rotateAngle = (float) Math.acos(Vector3f.dot(coneDirection, new Vector3f(0, 0, 1)));
+            float rotateAngle = (float) Math.acos(Vector3f.dot(coneDir, new Vector3f(0, 0, 1)));
             Matrix4f rotationMatrix = new Matrix4f();
             rotationMatrix.rotate(-rotateAngle, rotateAxis);
-            Matrix4f.transform(rotationMatrix, direction, direction);
-        } else if (coneDirection.z == -1) {
-            direction.z *= -1;
+            Matrix4f.transform(rotationMatrix, dir, dir);
+        } else if (coneDir.z == -1) {
+            dir.z *= -1;
         }
-        return new Vector3f(direction);
+        return new Vector3f(dir);
     }
      
     private Vector3f generateRandomUnitVector() {

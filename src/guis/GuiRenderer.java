@@ -11,21 +11,21 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
 import renderEngine.Loader;
-import toolbox.Maths;
+import tools.Maths;
 
 public class GuiRenderer {
 
 	private final RawModel quad;
-	private GuiShader shader;
+	private GuiShader shaderGUI;
 	
 	public GuiRenderer(Loader loader){
 		float[] positions = {-1, 1, -1, -1, 1, 1, 1, -1};
 		quad = loader.loadToVAO(positions, 2);
-		shader = new GuiShader();
+		shaderGUI = new GuiShader();
 	}
 	
-	public void render(List<GuiTexture> guis){
-		shader.start();
+	public void renderGUI(List<GuiTexture> guis){
+		shaderGUI.start();
 		GL30.glBindVertexArray(quad.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -34,18 +34,18 @@ public class GuiRenderer {
 		for(GuiTexture gui: guis){
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, gui.getTexture());
-			Matrix4f matrix = Maths.createTransformationMatrix(gui.getPosition(), gui.getScale());
-			shader.loadTransformation(matrix);
+			Matrix4f matrix = Maths.generateTransformationMatrix(gui.getPosition(), gui.getScale());
+			shaderGUI.loadTransformation(matrix);
 			GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
 		}
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);
-		shader.stop();
+		shaderGUI.stop();
 	}
 	
-	public void cleanUp(){
-		shader.cleanUp();
+	public void clean(){
+		shaderGUI.cleanUp();
 	}
 }

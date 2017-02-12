@@ -1,0 +1,12 @@
+#version 140
+
+in vec3 textureCoordinates;
+out vec4 final_Color;
+
+uniform samplerCube cubeMap;
+
+
+void main(void){
+	final_Color = texture(cubeMap, textureCoordinates);
+    
+}

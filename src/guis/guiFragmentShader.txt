@@ -1,13 +1,13 @@
 #version 140
 
-in vec2 textureCoords;
+in vec2 textureCoordinates;
 
-out vec4 out_Color;
+out vec4 color;
 
 uniform sampler2D guiTexture;
 
 void main(void){
 
-	out_Color = texture(guiTexture,vec2(textureCoords.x, textureCoords.y));
+	color = texture(guiTexture,vec2(textureCoordinates.x, textureCoordinates.y));
 
 }

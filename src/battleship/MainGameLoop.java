@@ -27,9 +27,6 @@ import audio.Source;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
-import fontMeshCreator.FontType;
-import fontMeshCreator.GUIText;
-import fontRendering.TextMaster;
 import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.RawModel;
@@ -44,13 +41,10 @@ import particles.ParticleTexture;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
-import renderEngine.OBJLoader;
 import terrains.Terrain;
-import textures.ModelTexture;
-import textures.TerrainTexture;
-import textures.TerrainTexturePack;
-import time.Time;
-import toolbox.MousePicker;
+import textures.TextureModel;
+import textures.TextureTerrain;
+import textures.TerrainTextureBundle;
 import water.WaterFrameBuffers;
 import water.WaterRenderer;
 import water.WaterShader;
@@ -62,8 +56,6 @@ public class MainGameLoop {
 
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
-		TextMaster.init(loader);
-		Time time = new Time();
 		
 		// ship start
 		Vector3f shipPositionStart = new Vector3f(150, -9.5f, -170);
@@ -71,11 +63,12 @@ public class MainGameLoop {
 		List<Entity> entities = new ArrayList<Entity>();
 		List<Entity> normalMapEntities = new ArrayList<Entity>();
 		
-		TexturedModel canonModel = new TexturedModel(OBJLoader.loadObjModel("simpleCanon", loader), new ModelTexture(loader.loadTexture("canonTexture")));
+		TexturedModel canonModel = new TexturedModel(OBJFileLoader.loadOBJ("simpleCanon", loader), new TextureModel(loader.loadTexture("canonTexture")));
 		Entity canon = new Entity(canonModel, new Vector3f(135, -10.5f, -110), 0, 0, 0, 0.01f);
 		entities.add(canon);
-		
-		TexturedModel shipModel = new TexturedModel(OBJLoader.loadObjModel("ship", loader), new ModelTexture(loader.loadTexture("grey")));
+				
+
+		TexturedModel shipModel = new TexturedModel(OBJFileLoader.loadOBJ("ship", loader), new TextureModel(loader.loadTexture("grey")));
 		Entity ship = new Entity(shipModel, shipPositionStart, 0, 180, -2, 0.02f);
 		entities.add(ship);
 		
@@ -158,59 +151,58 @@ public class MainGameLoop {
 		hitSource.setMaxDistance(1000);
 		
 		
-		FontType font = new FontType(loader.loadTexture("harrington"), new File("res/harrington.fnt"));
-		//GUIText text = new GUIText("Battleship", 3f, font, new Vector2f(0f, 0f), 1f, true);
-		//text.setColour(1, 1, 1);
-		//GUIImage.render("title");
+			
 		
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy2"));
-		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
-		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
-		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
+		TextureTerrain backgroundTexture = new TextureTerrain(loader.loadTexture("grassy2"));
+		TextureTerrain rTexture = new TextureTerrain(loader.loadTexture("mud"));
+		TextureTerrain gTexture = new TextureTerrain(loader.loadTexture("grassFlowers"));
+		TextureTerrain bTexture = new TextureTerrain(loader.loadTexture("path"));
 
-		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture,
+		TerrainTextureBundle texturePack = new TerrainTextureBundle(backgroundTexture, rTexture,
 				gTexture, bTexture);
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+		TextureTerrain blendMap = new TextureTerrain(loader.loadTexture("blendMap"));
 
 		// ****************************************
 
-		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
-		fernTextureAtlas.setNumberOfRows(2);
+		TextureModel fernTextureAtlas = new TextureModel(loader.loadTexture("fern"));
+		fernTextureAtlas.setNumRows(2);
 
 		TexturedModel fern = new TexturedModel(OBJFileLoader.loadOBJ("fern", loader),
 				fernTextureAtlas);
 
 		TexturedModel bobble = new TexturedModel(OBJFileLoader.loadOBJ("pine", loader),
-				new ModelTexture(loader.loadTexture("pine")));
-		bobble.getTexture().setHasTransparency(true);
+				new TextureModel(loader.loadTexture("pine")));
+		bobble.getTexture().setIsTransparent(true);
 
-		fern.getTexture().setHasTransparency(true);
+		fern.getTexture().setIsTransparent(true);
 
+
+		
 		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "map");
 		List<Terrain> terrains = new ArrayList<Terrain>();
 		terrains.add(terrain);
 
-		TexturedModel cannonBall = new TexturedModel(OBJLoader.loadObjModel("canonBall", loader),
-				new ModelTexture(loader.loadTexture("white")));
+		TexturedModel cannonBall = new TexturedModel(OBJFileLoader.loadOBJ("canonBall", loader),
+				new TextureModel(loader.loadTexture("white")));
 
 		
 		
 		//******************NORMAL MAP MODELS************************
 		
 		TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader),
-				new ModelTexture(loader.loadTexture("barrel")));
+				new TextureModel(loader.loadTexture("barrel")));
 		barrelModel.getTexture().setNormalMap(loader.loadTexture("barrelNormal"));
 		barrelModel.getTexture().setShineDamper(10);
 		barrelModel.getTexture().setReflectivity(0.5f);
 		
 		TexturedModel crateModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("crate", loader),
-				new ModelTexture(loader.loadTexture("crate")));
+				new TextureModel(loader.loadTexture("crate")));
 		crateModel.getTexture().setNormalMap(loader.loadTexture("crateNormal"));
 		crateModel.getTexture().setShineDamper(10);
 		crateModel.getTexture().setReflectivity(0.5f);
 		
 		TexturedModel boulderModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("boulder", loader),
-				new ModelTexture(loader.loadTexture("boulder")));
+				new TextureModel(loader.loadTexture("boulder")));
 		boulderModel.getTexture().setNormalMap(loader.loadTexture("boulderNormal"));
 		boulderModel.getTexture().setShineDamper(10);
 		boulderModel.getTexture().setReflectivity(0.5f);
@@ -263,7 +255,9 @@ public class MainGameLoop {
 		guiTextures.add(health);
 		GuiTexture title = new GuiTexture(loader.loadTexture("title"), new Vector2f(-0.65f, -0.9f), new Vector2f(0.30f, 0.30f));
 		guiTextures.add(title);
-				
+		
+		GuiTexture win = null;
+		
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 	
 		//**********Water Renderer Set-up************************
@@ -310,7 +304,6 @@ public class MainGameLoop {
 		
 		int enemyLives = 3;
 		boolean defeated = false;
-		GUIText winningText = null;
 		float delta = 0;
 		float moveSpeed = 2f;
 		while (!Display.isCloseRequested()) {
@@ -376,8 +369,9 @@ public class MainGameLoop {
 					if(enemyLives == 0)
 					{
 						boatSource.pause();
-						winningText = new GUIText("SIEG!", 3f, font, new Vector2f(0f, 0.5f), 1f, true);
-						winningText.setColour(1, 1, 1);
+					    win = new GuiTexture(loader.loadTexture("win"), new Vector2f(-0.005f, -0.2f), new Vector2f(0.5f, 0.5f));
+						guiTextures.add(win);
+
 						defeated = true;
 					}
 					health.setTexture(loader.loadTexture("health_"+enemyLives));
@@ -418,9 +412,9 @@ public class MainGameLoop {
 				health.setTexture(loader.loadTexture("health_"+enemyLives));
 				boatSource.resume();
 				phi = 0;
-				if(winningText != null)
+				if(win != null)
 				{
-					winningText.remove();
+					guiTextures.remove(win);
 				}
 			}
 			
@@ -482,8 +476,7 @@ public class MainGameLoop {
 			
 			ParticleMaster.renderParticles(camera);
 			
-			guiRenderer.render(guiTextures);
-			TextMaster.render();
+			guiRenderer.renderGUI(guiTextures);
 			
 			DisplayManager.updateDisplay();
 		}
@@ -495,11 +488,10 @@ public class MainGameLoop {
 		canonSource.delete();
 		hitSource.delete();
 		AudioMaster.cleanUP();
-		ParticleMaster.cleanUp();
-		TextMaster.cleanUp();
+		ParticleMaster.clean();
 		buffers.cleanUp();
 		waterShader.cleanUp();
-		guiRenderer.cleanUp();
+		guiRenderer.clean();
 		renderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();

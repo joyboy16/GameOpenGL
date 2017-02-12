@@ -4,11 +4,11 @@ import shaders.ShaderProgram;
 
 public class ContrastShader extends ShaderProgram {
 
-	private static final String VERTEX_FILE = "/postProcessing/contrastVertex.txt";
-	private static final String FRAGMENT_FILE = "/postProcessing/contrastFragment.txt";
+	private static final String VS = "/postProcessing/contrastVertexShader.txt";
+	private static final String FS = "/postProcessing/contrastFragmentShader.txt";
 	
 	public ContrastShader() {
-		super(VERTEX_FILE, FRAGMENT_FILE);
+		super(VS, FS);
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class ContrastShader extends ShaderProgram {
 
 	@Override
 	protected void bindAttributes() {
-		super.bindAttribute(0, "position");
+		super.bindAttribute(0, "pos");
 	}
 
 }

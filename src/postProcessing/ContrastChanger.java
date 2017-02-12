@@ -7,27 +7,27 @@ import org.lwjgl.opengl.GL13;
 
 public class ContrastChanger {
 
-	private ImageRenderer renderer;
-	private ContrastShader shader;
+	private ImageRenderer imgRenderer;
+	private ContrastShader contShader;
 	
 	public ContrastChanger() {
 		
-		renderer = new ImageRenderer();
-		shader = new ContrastShader();
+		imgRenderer = new ImageRenderer();
+		contShader = new ContrastShader();
 	}
 	
-	public void render(int texture){
-		shader.start();
+	public void render(int tex){
+		contShader.start();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
-		renderer.renderQuad();
-		shader.stop();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex);
+		imgRenderer.renderQuad();
+		contShader.stop();
 		
 	}
 	
-	public void cleanUp() {
-		renderer.cleanUp();
-		shader.cleanUp();
+	public void clean() {
+		imgRenderer.clean();
+		contShader.cleanUp();
 
 	}
 }
