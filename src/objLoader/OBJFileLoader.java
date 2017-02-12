@@ -1,4 +1,4 @@
-package objConverter;
+package objLoader;
 
 import java.io.BufferedReader;
 import java.io.File;

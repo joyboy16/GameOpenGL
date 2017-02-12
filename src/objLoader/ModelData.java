@@ -1,4 +1,4 @@
-package objConverter;
+package objLoader;
 
 public class ModelData
 {

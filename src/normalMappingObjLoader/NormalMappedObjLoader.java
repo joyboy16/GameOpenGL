@@ -1,4 +1,4 @@
-package normalMappingObjConverter;
+package normalMappingObjLoader;
 
 import java.io.BufferedReader;
 import java.io.File;

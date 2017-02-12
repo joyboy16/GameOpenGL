@@ -1,4 +1,4 @@
-package normalMappingObjConverter;
+package normalMappingObjLoader;
 
 public class ModelDataNormalMap {
 
